@@ -1,5 +1,12 @@
 import songSrc from "./assets/song/our-love-festival.mp3";
-import { ChevronDown, ChevronUp, Music2, Pause, Play } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Pause,
+  Play,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
@@ -56,6 +63,8 @@ export default function MusicPlayer() {
   const [muted, setMuted] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [expanded, setExpanded] = useState(false);
+  const [compact, setCompact] = useState(false);
+  const [compactControlsVisible, setCompactControlsVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const fullLyricsRef = useRef(null);
   const unmuteRef = useRef(null);
@@ -143,25 +152,35 @@ export default function MusicPlayer() {
       <audio ref={audioRef} src={songSrc} preload="auto" loop={false} />
       <AnimatePresence>
         <MotionDiv
-          className="music-widget"
+          className={[
+            "music-widget",
+            compact && "music-widget-compact",
+            compactControlsVisible && "music-widget-controls-visible",
+          ]
+            .filter(Boolean)
+            .join(" ")}
           initial={{ opacity: 0, y: 24, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 24, scale: 0.97 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           role="region"
           aria-label="Background music player"
+          onPointerLeave={() => setCompactControlsVisible(false)}
         >
           {/* Collapsed / main row */}
           <div className="music-widget-bar">
             <button
               className="music-play-btn"
               onClick={togglePlay}
+              onPointerDown={() => {
+                if (compact) setCompactControlsVisible(true);
+              }}
               aria-label={playing ? "Pause music" : "Play music"}
             >
               {playing ? <Pause size={15} /> : <Play size={15} />}
             </button>
 
-            <div className="music-info">
+            <div className="music-info" hidden={compact}>
               <div className="music-title-row">
                 {muted && playing && (
                   <span
@@ -204,7 +223,7 @@ export default function MusicPlayer() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.25 }}
                   >
-                    Play the song!
+                    Play/Pause the song
                   </MotionDiv>
                 )}
               </AnimatePresence>
@@ -212,6 +231,7 @@ export default function MusicPlayer() {
 
             <button
               className="music-expand-btn"
+              hidden={compact}
               onClick={() => setExpanded((v) => !v)}
               aria-label={expanded ? "Collapse lyrics" : "View full lyrics"}
               aria-expanded={expanded}
@@ -220,7 +240,24 @@ export default function MusicPlayer() {
             </button>
 
             <button
+              className="music-collapse-btn"
+              onClick={() => {
+                setCompact((value) => !value);
+                setExpanded(false);
+                setCompactControlsVisible(false);
+              }}
+              aria-label={
+                compact ? "Show music player lyrics" : "Minimize music player"
+              }
+              title={compact ? "Show lyrics" : "Minimize player"}
+              aria-expanded={!compact}
+            >
+              {compact ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+            </button>
+
+            <button
               className="music-dismiss-btn"
+              hidden={compact}
               onClick={() => {
                 audioRef.current?.pause();
                 setDismissed(true);
@@ -233,7 +270,7 @@ export default function MusicPlayer() {
 
           {/* Expanded full lyrics panel */}
           <AnimatePresence>
-            {expanded && (
+            {expanded && !compact && (
               <MotionDiv
                 className="music-lyrics-panel"
                 initial={{ height: 0, opacity: 0 }}

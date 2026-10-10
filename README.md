@@ -21,6 +21,24 @@ A production-quality, single-page wedding invitation website built with modern R
 
 ## 🛠 Tech Stack
 
+### Animation and performance
+
+Content reveals once on entering the viewport, with individually paced story
+paragraphs and gentle image zoom-outs. Native CSS scroll timelines add subtle
+hero, seal, and floral parallax on fine-pointer desktop devices. Mobile devices
+and browsers without scroll-timeline support use the static composition.
+
+Reduced-motion preferences disable entrances, zooming, parallax, and smooth
+scrolling. Animated properties are opacity and transforms, with no JavaScript
+scroll handlers or persistent animation loops. The countdown pauses in hidden
+tabs. Artwork uses compressed 480px/960px WebP sources, lazy loading below the
+hero, asynchronous decoding, and a single color-scheme-selected hero image.
+
+When replacing artwork, regenerate the `-480.webp` and `-960.webp` variants.
+Profile both invitation URLs on real mobile hardware, including reduced-motion
+mode, to validate frame times and layout stability. Frame rate depends on the
+device, browser, and display refresh rate.
+
 | Layer        | Technology                                                                                                                   |
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------- |
 | UI Library   | [React 19](https://react.dev/)                                                                                               |

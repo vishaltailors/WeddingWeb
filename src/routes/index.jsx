@@ -1,4 +1,4 @@
-import ThemeMenu from "../ThemeMenu";
+import BagiSvg from "../assets/images/bagi.svg?react";
 import morningHallMapCard from "../assets/images/morning-hall-map-card.jpg";
 import nightHallMapCard from "../assets/images/night-hall-map-card.jpg";
 import morningPheraImage from "../assets/images/wedding-morning-phera-view.jpg";
@@ -6,6 +6,7 @@ import morningImage from "../assets/images/wedding-morning-view.jpg";
 import nightPheraImage from "../assets/images/wedding-night-phera-view.jpg";
 import nightImage from "../assets/images/wedding-night-view.jpg";
 import { applyTheme, getStoredTheme, storeTheme } from "../theme";
+import ThemeMenu from "../theme-menu";
 import { getWedding, normalizeSide } from "../wedding";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -56,29 +57,14 @@ function Ornament({ className = "" }) {
   );
 }
 
-function HorseDrawnCarriage({ size = 35, strokeWidth = 1 }) {
+function HorseDrawnCarriage({ size = 35 }) {
   return (
-    <svg
-      width={size * 1.3}
+    <BagiSvg
+      width={size * (1042 / 522)}
       height={size}
-      viewBox="0 0 64 48"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
       aria-hidden="true"
-    >
-      {/* Horse, bridle, and harness. */}
-      <path d="m7 12 2-6 4 5 5 3 4 8h9c5 0 7 3 7 7v3H19l-5-12-5 2-6-4 4-6Z" />
-      <path d="m9 14 1 1m3-4 1 9m4-6-2 7m3 11-4 9h-4m13-9-3 9h-3m13-9 4 9h4m-1-16c4-1 5 2 5 5" />
-      <path d="m14 20 28 6M35 32h10" />
-      {/* Carriage canopy, passenger compartment, and spoked wheels. */}
-      <path d="M43 17c0-7 18-7 18 0H43Zm3 0v12m12-12v12M43 29h18l-3 7H46l-3-7Zm5-6h8" />
-      <circle cx="47" cy="39" r="5" />
-      <circle cx="59" cy="39" r="5" />
-      <path d="M47 34v10m-5-5h10m7-5v10m-5-5h10" />
-    </svg>
+      focusable="false"
+    />
   );
 }
 

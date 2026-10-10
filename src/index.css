@@ -1443,6 +1443,36 @@ button {
     0 2px 8px #00000009;
   overflow: hidden;
   font-family: "DM Sans", sans-serif;
+  transition: width 0.3s ease;
+}
+.music-widget.music-widget-compact {
+  left: auto;
+  width: 60px;
+  overflow: visible;
+}
+.music-widget-compact .music-widget-bar {
+  padding: 11px 12px;
+  gap: 0;
+}
+.music-widget [hidden] {
+  display: none;
+}
+.music-widget-compact .music-collapse-btn {
+  position: absolute;
+  left: -34px;
+  top: 0;
+  width: 34px;
+  height: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  opacity: 0;
+  pointer-events: none;
+}
+.music-widget-compact:hover .music-collapse-btn,
+.music-widget-compact:focus-within .music-collapse-btn,
+.music-widget-controls-visible .music-collapse-btn {
+  opacity: 1;
+  pointer-events: auto;
 }
 .music-widget-bar {
   display: flex;
@@ -1527,6 +1557,7 @@ button {
   line-height: 1.6;
 }
 .music-expand-btn,
+.music-collapse-btn,
 .music-dismiss-btn {
   flex-shrink: 0;
   width: 28px;
@@ -1545,11 +1576,13 @@ button {
     background 0.2s;
 }
 .music-expand-btn:hover,
+.music-collapse-btn:hover,
 .music-dismiss-btn:hover {
   color: var(--wine);
   background: var(--surface);
 }
 .music-expand-btn:focus-visible,
+.music-collapse-btn:focus-visible,
 .music-dismiss-btn:focus-visible {
   outline: 2px solid var(--gold);
   outline-offset: 0;
