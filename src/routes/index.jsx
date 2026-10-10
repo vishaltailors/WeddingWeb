@@ -1,9 +1,11 @@
+import ThemeMenu from "../ThemeMenu";
 import morningHallMapCard from "../assets/images/morning-hall-map-card.jpg";
 import nightHallMapCard from "../assets/images/night-hall-map-card.jpg";
 import morningPheraImage from "../assets/images/wedding-morning-phera-view.jpg";
 import morningImage from "../assets/images/wedding-morning-view.jpg";
 import nightPheraImage from "../assets/images/wedding-night-phera-view.jpg";
 import nightImage from "../assets/images/wedding-night-view.jpg";
+import { applyTheme, getStoredTheme, storeTheme } from "../theme";
 import { getWedding, normalizeSide } from "../wedding";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -267,6 +269,23 @@ function Index() {
     .split("/");
   const [menuOpen, setMenuOpen] = useState(false);
   const [shareState, setShareState] = useState("");
+  const [theme, setTheme] = useState(getStoredTheme);
+  const [resolvedTheme, setResolvedTheme] = useState(
+    () => document.documentElement.dataset.theme,
+  );
+
+  useEffect(() => {
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const updateTheme = () => setResolvedTheme(applyTheme(theme));
+    updateTheme();
+    systemTheme.addEventListener("change", updateTheme);
+    return () => systemTheme.removeEventListener("change", updateTheme);
+  }, [theme]);
+
+  function changeTheme(value) {
+    storeTheme(value);
+    setTheme(value);
+  }
 
   useEffect(() => {
     document.title = `${wedding.title} | A Beautiful Beginning`;
@@ -337,18 +356,21 @@ function Index() {
             </a>
           ))}
         </nav>
-        <button className="calendar-button" onClick={() => saveDate(wedding)}>
-          <CalendarDays size={15} /> <span>Save the date</span>
-        </button>
-        <button
-          className="menu-button"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label={menuOpen ? "Close navigation" : "Open navigation"}
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav"
-        >
-          {menuOpen ? <X /> : <Menu />}
-        </button>
+        <div className="header-actions">
+          <ThemeMenu theme={theme} onChange={changeTheme} />
+          <button className="calendar-button" onClick={() => saveDate(wedding)}>
+            <CalendarDays size={15} /> <span>Save the date</span>
+          </button>
+          <button
+            className="menu-button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
+          >
+            {menuOpen ? <X /> : <Menu />}
+          </button>
+        </div>
         <AnimatePresence>
           {menuOpen && (
             <MotionNav
@@ -448,17 +470,13 @@ function Index() {
         <section className="story-section section" id="our-story">
           <MotionDiv className="story-visual" {...reveal}>
             <div className="story-image-frame">
-              <picture>
-                <source
-                  srcSet={nightPheraImage}
-                  media="(prefers-color-scheme: dark)"
-                />
-                <img
-                  src={morningPheraImage}
-                  alt={`An illustration of ${wedding.coupleNames} exchanging garlands beneath a flower-covered wedding mandap`}
-                  loading="lazy"
-                />
-              </picture>
+              <img
+                src={
+                  resolvedTheme === "dark" ? nightPheraImage : morningPheraImage
+                }
+                alt={`An illustration of ${wedding.coupleNames} exchanging garlands beneath a flower-covered wedding mandap`}
+                loading="lazy"
+              />
             </div>
             <div className="story-seal">
               <Heart size={18} strokeWidth={1.2} />
@@ -613,17 +631,15 @@ function Index() {
           </MotionDiv>
           <MotionDiv className="venue-card" {...reveal}>
             <div className="venue-illustration">
-              <picture>
-                <source
-                  srcSet={nightHallMapCard}
-                  media="(prefers-color-scheme: dark)"
-                />
-                <img
-                  src={morningHallMapCard}
-                  alt={`The floral mandap at ${wedding.venue}, ${wedding.area}`}
-                  loading="lazy"
-                />
-              </picture>
+              <img
+                src={
+                  resolvedTheme === "dark"
+                    ? nightHallMapCard
+                    : morningHallMapCard
+                }
+                alt={`The floral mandap at ${wedding.venue}, ${wedding.area}`}
+                loading="lazy"
+              />
             </div>
             <div className="venue-card-caption">
               <div>

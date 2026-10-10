@@ -1,7 +1,10 @@
 import { routeTree } from "./routeTree.gen";
+import { applyTheme, getStoredTheme } from "./theme";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
+
+applyTheme(getStoredTheme());
 
 const router = createRouter({ routeTree });
 
