@@ -4,7 +4,7 @@ import morningPheraImage from "../assets/images/wedding-morning-phera-view.jpg";
 import morningImage from "../assets/images/wedding-morning-view.jpg";
 import nightPheraImage from "../assets/images/wedding-night-phera-view.jpg";
 import nightImage from "../assets/images/wedding-night-view.jpg";
-import { wedding } from "../wedding";
+import { getWedding, normalizeSide } from "../wedding";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   ArrowDown,
@@ -24,7 +24,10 @@ import {
 import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/")({ component: Index });
+export const Route = createFileRoute("/")({
+  validateSearch: (search) => ({ side: normalizeSide(search.side) }),
+  component: Index,
+});
 
 const reveal = {
   initial: { opacity: 0, y: 24 },
@@ -40,14 +43,6 @@ const links = [
 const MotionDiv = motion.div;
 const MotionNav = motion.nav;
 const MotionArticle = motion.article;
-const dateParts = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-  timeZone: "Asia/Kolkata",
-})
-  .format(new Date(wedding.date))
-  .split("/");
 
 function Ornament({ className = "" }) {
   return (
@@ -56,6 +51,32 @@ function Ornament({ className = "" }) {
       <Flower2 size={22} strokeWidth={1.2} />
       <span />
     </div>
+  );
+}
+
+function HorseDrawnCarriage({ size = 35, strokeWidth = 1 }) {
+  return (
+    <svg
+      width={size * 1.3}
+      height={size}
+      viewBox="0 0 64 48"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {/* Horse, bridle, and harness. */}
+      <path d="m7 12 2-6 4 5 5 3 4 8h9c5 0 7 3 7 7v3H19l-5-12-5 2-6-4 4-6Z" />
+      <path d="m9 14 1 1m3-4 1 9m4-6-2 7m3 11-4 9h-4m13-9-3 9h-3m13-9 4 9h4m-1-16c4-1 5 2 5 5" />
+      <path d="m14 20 28 6M35 32h10" />
+      {/* Carriage canopy, passenger compartment, and spoked wheels. */}
+      <path d="M43 17c0-7 18-7 18 0H43Zm3 0v12m12-12v12M43 29h18l-3 7H46l-3-7Zm5-6h8" />
+      <circle cx="47" cy="39" r="5" />
+      <circle cx="59" cy="39" r="5" />
+      <path d="M47 34v10m-5-5h10m7-5v10m-5-5h10" />
+    </svg>
   );
 }
 
@@ -160,24 +181,22 @@ function Ganesha({ className = "" }) {
   );
 }
 
-function Countdown() {
-  const getRemaining = () => {
-    const difference = Math.max(
-      0,
-      new Date(wedding.date).getTime() - Date.now(),
-    );
-    return {
-      days: Math.floor(difference / 86400000),
-      hours: Math.floor(difference / 3600000) % 24,
-      minutes: Math.floor(difference / 60000) % 60,
-      seconds: Math.floor(difference / 1000) % 60,
-    };
+function getRemaining(date) {
+  const difference = Math.max(0, new Date(date).getTime() - Date.now());
+  return {
+    days: Math.floor(difference / 86400000),
+    hours: Math.floor(difference / 3600000) % 24,
+    minutes: Math.floor(difference / 60000) % 60,
+    seconds: Math.floor(difference / 1000) % 60,
   };
-  const [remaining, setRemaining] = useState(getRemaining);
+}
+
+function Countdown({ date }) {
+  const [remaining, setRemaining] = useState(() => getRemaining(date));
   useEffect(() => {
-    const timer = setInterval(() => setRemaining(getRemaining()), 1000);
+    const timer = setInterval(() => setRemaining(getRemaining(date)), 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [date]);
   const arrived = Object.values(remaining).every((value) => value === 0);
   return (
     <section className="countdown-section" aria-label="Wedding countdown">
@@ -204,7 +223,7 @@ function Countdown() {
   );
 }
 
-function saveDate() {
+function saveDate(wedding) {
   const format = (date) =>
     new Date(date)
       .toISOString()
@@ -213,7 +232,7 @@ function saveDate() {
   const calendar = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Vishal and Krishi//Wedding Invitation//EN",
+    `PRODID:-//${wedding.coupleNames}//Wedding Invitation//EN`,
     "BEGIN:VEVENT",
     "UID:vishal-krishi-wedding-2026@invitation",
     `DTSTAMP:${format(new Date())}`,
@@ -221,7 +240,7 @@ function saveDate() {
     `DTEND:${format(wedding.endDate)}`,
     `SUMMARY:${wedding.couple} — Wedding`,
     `LOCATION:${wedding.venue}\\, ${wedding.location.replaceAll(",", "\\,")}`,
-    "DESCRIPTION:Join us to celebrate the wedding of Vishal and Krishi.",
+    `DESCRIPTION:Join us to celebrate the wedding of ${wedding.coupleNames}.`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
@@ -230,14 +249,34 @@ function saveDate() {
   );
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = "vishal-and-krishi-wedding.ics";
+  anchor.download = `${wedding.slug}-wedding.ics`;
   anchor.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function Index() {
+  const { side } = Route.useSearch();
+  const wedding = getWedding(side);
+  const dateParts = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "Asia/Kolkata",
+  })
+    .format(new Date(wedding.date))
+    .split("/");
   const [menuOpen, setMenuOpen] = useState(false);
   const [shareState, setShareState] = useState("");
+
+  useEffect(() => {
+    document.title = `${wedding.title} | A Beautiful Beginning`;
+    document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute(
+        "content",
+        `With hearts full of love, ${wedding.coupleNames} invite you to celebrate their beautiful beginning. Discover the celebrations, wedding venue, and countdown to forever.`,
+      );
+  }, [wedding.title, wedding.coupleNames]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -255,10 +294,13 @@ function Index() {
   }, [shareState]);
 
   async function shareInvitation() {
+    const url = new URL(window.location.href);
+    url.hash = "";
+    url.searchParams.set("side", side);
     const data = {
-      title: "Vishal Weds Krishi",
+      title: wedding.title,
       text: `Join us for our wedding on ${wedding.dateLabel}.`,
-      url: window.location.href.split("#")[0],
+      url: url.href,
     };
     try {
       if (navigator.share) await navigator.share(data);
@@ -281,9 +323,12 @@ function Index() {
         <a
           className="monogram"
           href="#home"
-          aria-label="Vishal and Krishi home"
+          aria-label={`${wedding.coupleNames} home`}
         >
-          V<span>&</span>K<span className="monogram-dot">.</span>
+          {wedding.firstInitial}
+          <span>&</span>
+          {wedding.secondInitial}
+          <span className="monogram-dot">.</span>
         </a>
         <nav className="desktop-nav" aria-label="Main navigation">
           {links.map((link) => (
@@ -292,7 +337,7 @@ function Index() {
             </a>
           ))}
         </nav>
-        <button className="calendar-button" onClick={saveDate}>
+        <button className="calendar-button" onClick={() => saveDate(wedding)}>
           <CalendarDays size={15} /> <span>Save the date</span>
         </button>
         <button
@@ -355,14 +400,15 @@ function Index() {
               TWO HEARTS. TWO FAMILIES. ONE BEAUTIFUL BEGINNING.
             </p>
             <h1>
-              <span>Vishal</span>
+              <span>{wedding.firstName}</span>
               <span className="weds">
                 <i />
                 <span>weds</span>
                 <i />
               </span>
               <span>
-                Krishi<span className="name-period">.</span>
+                {wedding.secondName}
+                <span className="name-period">.</span>
               </span>
             </h1>
             <p className="hero-description">
@@ -378,7 +424,9 @@ function Index() {
               </span>
               <span className="date-line" />
             </div>
-            <p className="hero-location">SURAT, GUJARAT</p>
+            <p className="hero-location">
+              {wedding.city.toUpperCase()}, {wedding.region.toUpperCase()}
+            </p>
             <a className="button primary-button" href="#celebrations">
               You’re invited <ArrowUpRight size={17} />
             </a>
@@ -395,7 +443,7 @@ function Index() {
           </span>
         </section>
 
-        <Countdown />
+        <Countdown key={wedding.date} date={wedding.date} />
 
         <section className="story-section section" id="our-story">
           <MotionDiv className="story-visual" {...reveal}>
@@ -407,7 +455,7 @@ function Index() {
                 />
                 <img
                   src={morningPheraImage}
-                  alt="An illustration of Vishal and Krishi exchanging garlands beneath a flower-covered wedding mandap"
+                  alt={`An illustration of ${wedding.coupleNames} exchanging garlands beneath a flower-covered wedding mandap`}
                   loading="lazy"
                 />
               </picture>
@@ -415,7 +463,9 @@ function Index() {
             <div className="story-seal">
               <Heart size={18} strokeWidth={1.2} />
               <span>MEANT TO BE</span>
-              <span>V + K</span>
+              <span>
+                {wedding.firstInitial} + {wedding.secondInitial}
+              </span>
             </div>
             <span className="image-footnote">
               A new chapter, written together.
@@ -458,7 +508,7 @@ function Index() {
               unfold.
             </p>
             <div className="couple-signature">
-              Vishal <span>&</span> Krishi
+              {wedding.firstName} <span>&</span> {wedding.secondName}
             </div>
           </MotionDiv>
         </section>
@@ -474,11 +524,14 @@ function Index() {
             </p>
             <Ornament />
           </MotionDiv>
-          <div className="event-grid">
+          <div className="event-grid" data-event-count={wedding.events.length}>
             {wedding.events.map((event, index) => {
-              const Icon = { sun: Sun, music: Music2, flower: Flower2 }[
-                event.icon
-              ];
+              const Icon = {
+                sun: Sun,
+                music: Music2,
+                flower: Flower2,
+                carriage: HorseDrawnCarriage,
+              }[event.icon];
               return (
                 <MotionArticle
                   className={`event-card ${event.tone}`}
@@ -510,8 +563,8 @@ function Index() {
             })}
           </div>
           <p className="celebrations-note">
-            <MapPin size={14} /> All celebrations at {wedding.venue},
-            Jahangirpura <span>·</span> Times in IST
+            <MapPin size={14} /> All celebrations except Haldi at{" "}
+            {wedding.venue}, {wedding.area} <span>·</span> Times in IST
           </p>
         </section>
 
@@ -567,7 +620,7 @@ function Index() {
                 />
                 <img
                   src={morningHallMapCard}
-                  alt="The floral mandap at SMC Community Hall, Jahangirpura"
+                  alt={`The floral mandap at ${wedding.venue}, ${wedding.area}`}
                   loading="lazy"
                 />
               </picture>
@@ -575,7 +628,7 @@ function Index() {
             <div className="venue-card-caption">
               <div>
                 <span className="eyebrow">THE WEDDING VENUE</span>
-                <h3>Meet us in Surat</h3>
+                <h3>Meet us in {wedding.city}</h3>
               </div>
               <a
                 href={wedding.mapsUrl}
@@ -605,7 +658,10 @@ function Index() {
               <br />
               Come with your blessings. Leave with beautiful memories.
             </p>
-            <button className="button primary-button" onClick={saveDate}>
+            <button
+              className="button primary-button"
+              onClick={() => saveDate(wedding)}
+            >
               <CalendarDays size={16} /> Save our date
             </button>
             <button className="share-button" onClick={shareInvitation}>
@@ -624,7 +680,10 @@ function Index() {
       </main>
       <footer className="site-footer">
         <a className="monogram" href="#home" aria-label="Back to top">
-          V<span>&</span>K<span className="monogram-dot">.</span>
+          {wedding.firstInitial}
+          <span>&</span>
+          {wedding.secondInitial}
+          <span className="monogram-dot">.</span>
         </a>
         <p>Made with love, for a lifetime of it.</p>
         <span>
