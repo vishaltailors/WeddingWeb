@@ -429,18 +429,36 @@ function Index() {
             </h2>
             <Ornament />
             <p>
-              Some connections feel like they were always meant to be. Ours is a
-              celebration of two hearts finding a home in each other — and two
-              families becoming one.
+              It all began on <strong>27th July 2025</strong>, when two
+              strangers met for the very first time, knowing little about each
+              other and even less about the beautiful journey that lay ahead. We
+              started with a simple "Hello," shared a little about ourselves,
+              and spent around half an hour talking before heading back to our
+              respective homes. Little did we know that this simple meeting was
+              the beginning of something special.
             </p>
             <p>
-              As we begin this new chapter, we want our favourite people by our
-              side. Your laughter, your blessings, and your presence will make
-              our day truly ours.
+              A few days later, over dinner at a restaurant, we talked about our
+              lives, our families, our friends, and the dreams we hoped to
+              fulfil. Somewhere between those conversations and shared smiles,
+              we felt a quiet certainty that maybe, this was going to be
+              something special. There was no grand movie moment — just a simple
+              feeling that we could be good together.
+            </p>
+            <p>
+              As more meetings followed and our families grew closer, that
+              little feeling turned into something we both wanted to hold on to.
+              And on <strong>24th August 2025</strong>, we made it official,
+              choosing to begin our journey together.
+            </p>
+            <p>
+              Some connections feel as though they were always meant to be. Ours
+              is a story of two hearts finding a home in each other, two
+              families coming together, and a beautiful new chapter waiting to
+              unfold.
             </p>
             <div className="couple-signature">
               Vishal <span>&</span> Krishi
-              <Heart size={19} strokeWidth={1.2} />
             </div>
           </MotionDiv>
         </section>
