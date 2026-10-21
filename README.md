@@ -240,9 +240,29 @@ vercel
 
 **Netlify / Cloudflare Pages / GitHub Pages / S3 + CloudFront / etc.** use the same build command and output directory. No server or serverless functions required.
 
+### Side-Specific Social Previews
+
+The Vite social preview plugin builds two 1200 x 630 JPEG cards and two HTML
+variants from `src/wedding.js`. `vercel.json` rewrites `/?side=bride` to the bride
+HTML without changing the visible URL. Groom, missing, and invalid side values
+use the default HTML. Both responses include Open Graph and Twitter metadata
+before JavaScript runs, so link previews do not depend on React execution.
+
+Image filenames include a content hash so changes to the wedding details produce
+new image URLs. Social platforms may still cache the shared page itself; request
+a fresh scrape after deploying updated metadata.
+
+`bun run dev` and `bun run preview` also serve the appropriate metadata for each
+side. Other static hosts need an equivalent query-aware rewrite to serve the
+bride preview.
+
 ### Environment Variables
 
-None required — the app is 100% static, no API keys, no backend.
+Set **`SITE_URL`** in Vercel to the public wedding URL (for example,
+`https://your-wedding-domain.com`) and redeploy. This ensures absolute image and
+page URLs point to your custom domain. When unset, the build uses
+`VERCEL_PROJECT_PRODUCTION_URL`, then `VERCEL_URL`; local builds use
+`http://localhost:5173`. No API keys or runtime backend are required.
 
 ---
 

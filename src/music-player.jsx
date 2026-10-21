@@ -60,63 +60,89 @@ const MotionDiv = motion.div;
 export default function MusicPlayer() {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(true);
+  const [awaitingInteraction, setAwaitingInteraction] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const [compact, setCompact] = useState(false);
   const [compactControlsVisible, setCompactControlsVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const fullLyricsRef = useRef(null);
-  const unmuteRef = useRef(null);
 
   const currentIndex = getCurrentLyricIndex(currentTime);
   const currentLyric = currentIndex >= 0 ? LYRICS[currentIndex] : null;
 
-  // Autoplay muted on mount; unmute on first user interaction
+  // Audible autoplay may require a user gesture, even when audio is preloaded.
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || dismissed) return;
+    let active = true;
+    const events = ["click", "keydown", "touchend"];
 
-    audio.muted = true;
-    audio
-      .play()
-      .then(() => {
-        setPlaying(true);
-      })
-      .catch(() => {
-        // autoplay blocked entirely — stay paused, user can press play
-      });
-
-    function unmute() {
-      if (!audioRef.current) return;
-      audioRef.current.muted = false;
-      setMuted(false);
-      ["click", "keydown", "touchstart"].forEach((ev) =>
-        document.removeEventListener(ev, unmute),
+    function removeInteractionListeners() {
+      events.forEach((event) =>
+        document.removeEventListener(event, startOnInteraction),
       );
     }
-    unmuteRef.current = unmute;
-    ["click", "keydown", "touchstart"].forEach((ev) =>
-      document.addEventListener(ev, unmute, { once: true, passive: true }),
+
+    function onPlay() {
+      setAwaitingInteraction(false);
+      removeInteractionListeners();
+    }
+
+    function startPlayback() {
+      audio.muted = false;
+      audio.play().catch(() => {
+        if (active) setAwaitingInteraction(true);
+      });
+    }
+
+    function startOnInteraction(event) {
+      // Let explicit playback controls handle their own action without toggling twice.
+      if (
+        event.target instanceof Element &&
+        event.target.closest(".music-play-btn, .music-dismiss-btn")
+      ) {
+        return;
+      }
+      if (
+        event.type === "keydown" &&
+        (event.repeat || !["Enter", " "].includes(event.key))
+      ) {
+        return;
+      }
+      startPlayback();
+    }
+
+    audio.addEventListener("play", onPlay);
+    events.forEach((event) =>
+      document.addEventListener(event, startOnInteraction, { passive: true }),
     );
+    startPlayback();
 
     return () => {
-      ["click", "keydown", "touchstart"].forEach((ev) =>
-        document.removeEventListener(ev, unmuteRef.current),
-      );
+      active = false;
+      removeInteractionListeners();
+      audio.removeEventListener("play", onPlay);
+      audio.pause();
     };
-  }, []);
+  }, [dismissed]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     const onTime = () => setCurrentTime(audio.currentTime);
-    const onEnded = () => setPlaying(false);
+    const onPlay = () => setPlaying(true);
+    const onPause = () => setPlaying(false);
+    setPlaying(!audio.paused);
     audio.addEventListener("timeupdate", onTime);
-    audio.addEventListener("ended", onEnded);
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+    audio.addEventListener("ended", onPause);
     return () => {
       audio.removeEventListener("timeupdate", onTime);
-      audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("pause", onPause);
+      audio.removeEventListener("ended", onPause);
     };
   }, []);
 
@@ -132,15 +158,14 @@ export default function MusicPlayer() {
   async function togglePlay() {
     const audio = audioRef.current;
     if (!audio) return;
-    if (playing) {
+    if (!audio.paused) {
       audio.pause();
-      setPlaying(false);
     } else {
       try {
+        audio.muted = false;
         await audio.play();
-        setPlaying(true);
       } catch {
-        // still blocked — nothing to do
+        setAwaitingInteraction(true);
       }
     }
   }
@@ -181,27 +206,17 @@ export default function MusicPlayer() {
             </button>
 
             <div className="music-info" hidden={compact}>
-              <div className="music-title-row">
-                {muted && playing && (
-                  <span
-                    className="music-muted-badge"
-                    title="Tap anywhere to unmute"
-                  >
-                    MUTED
-                  </span>
-                )}
-              </div>
               <AnimatePresence mode="wait">
-                {muted && playing ? (
+                {awaitingInteraction && !playing ? (
                   <MotionDiv
-                    key="muted"
+                    key="awaiting-interaction"
                     className="music-lyric-idle"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.25 }}
                   >
-                    Tap anywhere to unmute
+                    Tap anywhere to start music
                   </MotionDiv>
                 ) : currentLyric && playing ? (
                   <MotionDiv
