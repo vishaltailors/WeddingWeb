@@ -29,6 +29,17 @@ export const weddingSides = {
         tone: "yellow",
       },
       {
+        name: "Grah Shanti",
+        subtitle: "Sacred prayers, blessings for a new beginning",
+        date: "11 December",
+        time: "9:30 AM",
+        icon: "flower",
+        description:
+          "Join Vishal's family for sacred prayers as we seek peace, harmony, and blessings for the journey ahead.",
+        dress: "Traditional Indian attire",
+        tone: "rose",
+      },
+      {
         name: "Ring Ceremony & Sangeet",
         subtitle: "A promise forever, a night to remember",
         date: "11 December",
@@ -89,6 +100,17 @@ export const weddingSides = {
           "Join Krishi’s family as we exchange rings, then dance the night away to our favourite melodies.",
         dress: "Bring your festive best",
         tone: "green",
+      },
+      {
+        name: "Grah Shanti",
+        subtitle: "Sacred prayers, blessings for a new beginning",
+        date: "12 December",
+        time: "1:00 PM",
+        icon: "flower",
+        description:
+          "Join Krishi's family for sacred prayers as we seek peace, harmony, and blessings for the journey ahead.",
+        dress: "Traditional Indian attire",
+        tone: "rose",
       },
       {
         name: "The Wedding",

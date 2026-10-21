@@ -641,6 +641,15 @@ button {
   max-width: 800px;
   margin-inline: auto;
 }
+.event-grid[data-event-count="5"] {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.event-grid[data-event-count="5"] > .event-card {
+  grid-column: span 2;
+}
+.event-grid[data-event-count="5"] > .event-card:nth-child(4) {
+  grid-column: 2 / span 2;
+}
 .event-card {
   position: relative;
   text-align: center;
@@ -1286,11 +1295,15 @@ button {
     margin: auto;
   }
   .event-grid,
-  .event-grid[data-event-count="4"] {
+  .event-grid[data-event-count="4"],
+  .event-grid[data-event-count="5"] {
     grid-template-columns: 1fr;
     gap: 25px;
     max-width: 360px;
     margin: auto;
+  }
+  .event-grid[data-event-count="5"] > .event-card {
+    grid-column: auto;
   }
   .event-card {
     padding: 32px 31px 28px;
