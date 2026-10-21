@@ -216,7 +216,7 @@ export default function MusicPlayer() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.25 }}
                   >
-                    Tap anywhere to start music
+                    Tap to start music
                   </MotionDiv>
                 ) : currentLyric && playing ? (
                   <MotionDiv
@@ -238,7 +238,7 @@ export default function MusicPlayer() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.25 }}
                   >
-                    Play/Pause the song
+                    {playing ? "Playing your song" : "Music paused"}
                   </MotionDiv>
                 )}
               </AnimatePresence>
