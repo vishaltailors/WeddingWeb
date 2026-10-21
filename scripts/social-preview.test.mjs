@@ -41,7 +41,29 @@ test("production HTML references distinct, valid social cards and shared app ass
   assert.notEqual(images[0], images[1]);
   assert.equal(pages[0].match(/src="([^"]+\.js)"/)[1], pages[1].match(/src="([^"]+\.js)"/)[1]);
   const config = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url)));
-  assert.deepEqual(config.rewrites[0].has, [{ type: "query", key: "side", value: "bride" }]);
-  assert.equal(config.rewrites[0].destination, "/bride.html");
-  assert.equal(config.rewrites[1].destination, "/index.html");
+  assert.equal(config.rewrites, undefined);
+  assert.deepEqual(config.routes[0].has, [{ type: "query", key: "side", value: "bride" }]);
+  assert.equal(config.routes[0].dest, "/bride.html");
+  assert.equal(config.routes[1].dest, "/index.html");
+  assert.deepEqual(config.routes[2], { handle: "filesystem" });
+});
+
+test("side routing runs before static-file lookup and leaves assets untouched", async () => {
+  const config = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url)));
+  const resolve = (path) => {
+    const url = new URL(path, "https://wedding.example");
+    for (const route of config.routes) {
+      if (route.handle === "filesystem") return url.pathname;
+      if (!new RegExp(route.src).test(url.pathname)) continue;
+      if (route.has?.some(({ key, value }) => url.searchParams.get(key) !== value)) continue;
+      return route.dest;
+    }
+  };
+  assert.equal(resolve("/?side=bride"), "/bride.html");
+  assert.equal(resolve("/?preview=2&side=bride"), "/bride.html");
+  assert.equal(resolve("/?side=groom"), "/index.html");
+  assert.equal(resolve("/?side=invalid"), "/index.html");
+  assert.equal(resolve("/"), "/index.html");
+  assert.equal(resolve("/assets/app.js?side=bride"), "/assets/app.js");
+  assert.equal(resolve("/og-bride.jpg"), "/og-bride.jpg");
 });
