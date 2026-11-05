@@ -170,6 +170,9 @@ function Index() {
   // undefined while a guest's invitation is still loading, null when there is none.
   const [invitation, setInvitation] = useState(undefined);
   const [coverOpen, setCoverOpen] = useState(true);
+  // The cover only greets a guest whose name resolved from the database;
+  // visitors without one land straight on the invitation.
+  const showCover = coverOpen && Boolean(invite) && invitation !== null;
   const dateParts = new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "2-digit",
@@ -265,7 +268,7 @@ function Index() {
   return (
     <MotionConfig reducedMotion="user">
       <AnimatePresence>
-        {coverOpen && (
+        {showCover && (
           <InvitationCover
             wedding={wedding}
             invitation={invitation}
@@ -274,10 +277,10 @@ function Index() {
           />
         )}
       </AnimatePresence>
-      <a className="skip-link" href="#main" inert={coverOpen}>
+      <a className="skip-link" href="#main" inert={showCover}>
         Skip to invitation
       </a>
-      <header className="site-header" inert={coverOpen}>
+      <header className="site-header" inert={showCover}>
         <a
           className="monogram"
           href="#home"
@@ -335,7 +338,7 @@ function Index() {
         </AnimatePresence>
       </header>
 
-      <main id="main" inert={coverOpen}>
+      <main id="main" inert={showCover}>
         <section className="hero" id="home">
           <div className="hero-art" aria-hidden="true">
             <img
@@ -350,7 +353,7 @@ function Index() {
           <MotionDiv
             className="hero-content"
             initial={{ opacity: 0, y: 20 }}
-            animate={coverOpen ? undefined : { opacity: 1, y: 0 }}
+            animate={showCover ? undefined : { opacity: 1, y: 0 }}
             transition={{ duration: 1.2, delay: 0.45 }}
           >
             <div className="hero-blessing">
@@ -633,7 +636,7 @@ function Index() {
           </MotionDiv>
         </section>
       </main>
-      <footer className="site-footer" inert={coverOpen}>
+      <footer className="site-footer" inert={showCover}>
         <a className="monogram" href="#home" aria-label="Back to top">
           {wedding.firstInitial}
           <span>&</span>
@@ -645,7 +648,7 @@ function Index() {
           {wedding.dateLabel.toUpperCase()} <Heart size={12} />
         </span>
       </footer>
-      <div inert={coverOpen}>
+      <div inert={showCover}>
         <MusicPlayer />
       </div>
     </MotionConfig>
