@@ -45,7 +45,8 @@ test("production HTML references distinct, valid social cards and shared app ass
   assert.deepEqual(config.routes[0].has, [{ type: "query", key: "side", value: "bride" }]);
   assert.equal(config.routes[0].dest, "/bride.html");
   assert.equal(config.routes[1].dest, "/index.html");
-  assert.deepEqual(config.routes[2], { handle: "filesystem" });
+  assert.equal(config.routes[2].dest, "/index.html");
+  assert.deepEqual(config.routes[3], { handle: "filesystem" });
 });
 
 test("side routing runs before static-file lookup and leaves assets untouched", async () => {
@@ -64,6 +65,8 @@ test("side routing runs before static-file lookup and leaves assets untouched", 
   assert.equal(resolve("/?side=groom"), "/index.html");
   assert.equal(resolve("/?side=invalid"), "/index.html");
   assert.equal(resolve("/"), "/index.html");
+  assert.equal(resolve("/admin"), "/index.html");
+  assert.equal(resolve("/admin/"), "/index.html");
   assert.equal(resolve("/assets/app.js?side=bride"), "/assets/app.js");
   assert.equal(resolve("/og-bride.jpg"), "/og-bride.jpg");
 });

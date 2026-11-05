@@ -7,6 +7,7 @@ A production-quality, single-page wedding invitation website built with modern R
 ## ✨ Features
 
 - **Dual invitation modes** — One codebase serves both the groom's and bride's side of the family via a URL query parameter. Title, event copy, signatures, and calendar downloads switch automatically.
+- **Personalised guest invitations** — An optional per-guest name and message, resolved from a private Supabase record behind an unguessable token, managed from a password-protected page at `/admin`.
 - **Live countdown timer** — Real-time days / hours / minutes / seconds counter to the main ceremony.
 - **Event timeline** — Haldi, Ring Ceremony &amp; Sangeet, Baraat, and Wedding cards with colour-coded tones, icons, dress codes, and precise scheduling.
 - **"Save the Date" calendar download** — Generates and downloads an `.ics` file compatible with Google Calendar, Apple Calendar, Outlook, etc.
@@ -113,6 +114,70 @@ Both sides use the same page and design system, switched via a URL query paramet
 
 ---
 
+## 💌 Personalised Invitations
+
+Guest invitations are private records in Supabase, not URL parameters. A guest
+link carries an unguessable 64-character bearer token, and the page asks the
+database for the single invitation matching that token. Editing the link cannot
+change a guest's name or message, and no endpoint ever returns the guest list.
+
+| URL                                  | Result                                             |
+| ------------------------------------ | -------------------------------------------------- |
+| `/`                                  | Standard groom invitation                          |
+| `/?side=bride`                       | Standard bride invitation                          |
+| `/?side=groom&invite=<token>`        | Personalised groom invitation                      |
+| `/?side=bride&invite=<token>`        | Personalised bride invitation                      |
+| `/?side=groom&invite=made-up-token`  | Standard groom invitation (token discarded)        |
+
+Each token is locked to the side it was created for, so changing `side` in the
+address bar drops the personalisation instead of retargeting it. A paused,
+deleted, or unrecognised invitation also falls back to the standard invitation.
+
+### Managing invitations
+
+1. Open `/admin` and sign in with an allowlisted account.
+2. Create an invitation with a guest name, a version (groom/bride), and an
+   optional personal message.
+3. Copy the guest link from the row and send it.
+
+Guests read the current wording on every page load, so editing a name or message
+in `/admin` appears on the guest's next refresh. Pausing or deleting an
+invitation immediately reverts that link to the standard invitation. The admin
+page is not linked from the invitation and asks search engines not to index it.
+
+### Administrator access
+
+Admin access is an allowlist, never a public sign-up. Create the account in
+Supabase Auth, then add the same email in the SQL editor:
+
+```sql
+insert into private.invitation_admins (email)
+values ('you@example.com')
+on conflict (email) do nothing;
+```
+
+The list is checked against the verified `email` claim on the signed-in
+account's JWT. Deleting a row revokes that account on its next request.
+
+### Schema
+
+| Object                                     | Purpose                                                                    |
+| ------------------------------------------ | -------------------------------------------------------------------------- |
+| `public.invitations`                       | Guest records: name, message, locked side, active flag, bearer token       |
+| `public.resolve_invitation(token, side)`   | Returns at most one active invitation for the matching token **and** side  |
+| `public.is_invitation_admin()`             | True when the signed-in account is on the allowlist                        |
+| `private.invitation_admins`                | The admin allowlist, never exposed to the browser                          |
+
+Anonymous visitors receive no `select`, `insert`, `update`, or `delete` grant on
+`public.invitations`. Their only access path is the resolver, which requires both
+a valid token and the matching side, and returns a single row.
+
+Apply the schema in [supabase/migrations/](file:///Users/vishaltailor/Desktop/Projects/wedding-web/supabase/migrations)
+against the project database, then add your admin email with
+[invitation_admins.sql](file:///Users/vishaltailor/Desktop/Projects/wedding-web/supabase/migrations/invitation_admins.sql).
+
+---
+
 ## 📝 Customisation Guide
 
 All wedding content lives in a single central file. Edit, extend, or override as needed.
@@ -201,10 +266,12 @@ wedding-web/
 │   ├── assets/images/        # Hero, venue, and mandap illustrations (JPG/PNG/SVG)
 │   ├── routes/
 │   │   ├── __root.jsx        # Root layout (Outlet)
+│   │   ├── admin.jsx         # Invitation admin (sign in → create → edit → share links)
 │   │   └── index.jsx         # Main invitation page (hero → story → events → venue → CTA)
 │   ├── index.css             # Tailwind import, design tokens, all component styles, media queries
 │   ├── main.jsx              # React root + TanStack Router bootstrap
 │   ├── routeTree.gen.ts      # Auto-generated route tree (do not edit by hand)
+│   ├── supabase.js           # Supabase client, invitation resolver, admin data access
 │   └── wedding.js            # Single source of truth: wedding dates, venues, events per side
 ├── .gitignore
 ├── .prettierrc               # Prettier config (sort-imports + tailwind plugins)
@@ -248,6 +315,11 @@ HTML without changing the visible URL. Groom, missing, and invalid side values
 use the default HTML. Both responses include Open Graph and Twitter metadata
 before JavaScript runs, so link previews do not depend on React execution.
 
+Vercel uses ordered `routes` here so the side condition is evaluated before
+the filesystem serves the root `index.html`. Keep these root routes before
+the filesystem handler; ordinary `rewrites` can be bypassed by the existing
+static root page. Assets continue to use normal static-file serving.
+
 Image filenames include a content hash so changes to the wedding details produce
 new image URLs. Social platforms may still cache the shared page itself; request
 a fresh scrape after deploying updated metadata.
@@ -262,7 +334,17 @@ Set **`SITE_URL`** in Vercel to the public wedding URL (for example,
 `https://your-wedding-domain.com`) and redeploy. This ensures absolute image and
 page URLs point to your custom domain. When unset, the build uses
 `VERCEL_PROJECT_PRODUCTION_URL`, then `VERCEL_URL`; local builds use
-`http://localhost:5173`. No API keys or runtime backend are required.
+`http://localhost:5173`.
+
+Personalised invitations also need the Supabase connection, so set
+**`VITE_SUPABASE_URL`** and **`VITE_SUPABASE_ANON_KEY`** for every environment
+that builds the site. Both values are public by design: the anon key is
+restricted by row level security, and guest details are only reachable through
+the token-scoped resolver. Never set the service role key as a `VITE_` variable,
+because Vite inlines those into the browser bundle.
+
+Local development reads the same names from `.env.local`; see
+[.env.example](file:///Users/vishaltailor/Desktop/Projects/wedding-web/.env.example).
 
 ---
 

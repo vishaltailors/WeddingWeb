@@ -7,6 +7,8 @@ import nightPheraImage from "../assets/images/wedding-night-phera-view.jpg";
 import nightImage from "../assets/images/wedding-night-view.jpg";
 import { applyTheme, getStoredTheme, storeTheme } from "../theme";
 import ThemeMenu from "../theme-menu";
+import MusicPlayer from "../music-player";
+import { fetchInvitation, normalizeInviteToken } from "../supabase";
 import { getWedding, normalizeSide } from "../wedding";
 import { createFileRoute } from "@tanstack/react-router";
 import {
@@ -28,7 +30,10 @@ import { AnimatePresence, MotionConfig, motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
-  validateSearch: (search) => ({ side: normalizeSide(search.side) }),
+  validateSearch: (search) => ({
+    side: normalizeSide(search.side),
+    invite: normalizeInviteToken(search.invite),
+  }),
   component: Index,
 });
 
@@ -243,8 +248,9 @@ function saveDate(wedding) {
 }
 
 function Index() {
-  const { side } = Route.useSearch();
+  const { side, invite } = Route.useSearch();
   const wedding = getWedding(side);
+  const [invitation, setInvitation] = useState(null);
   const dateParts = new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "2-digit",
@@ -272,6 +278,22 @@ function Index() {
     storeTheme(value);
     setTheme(value);
   }
+
+  // Guest details are read from the database on each page load, so any edit
+  // saved in the admin page appears the next time this invitation refreshes.
+  useEffect(() => {
+    if (!invite) {
+      setInvitation(null);
+      return;
+    }
+    let active = true;
+    fetchInvitation(invite, side).then((resolved) => {
+      if (active) setInvitation(resolved);
+    });
+    return () => {
+      active = false;
+    };
+  }, [invite, side]);
 
   useEffect(() => {
     document.title = `${wedding.title} | A Beautiful Beginning`;
@@ -302,6 +324,7 @@ function Index() {
     const url = new URL(window.location.href);
     url.hash = "";
     url.searchParams.set("side", side);
+    if (!invitation) url.searchParams.delete("invite");
     const data = {
       title: wedding.title,
       text: `Join us for our wedding on ${wedding.dateLabel}.`,
@@ -404,6 +427,20 @@ function Index() {
               <Ganesha className="hero-ganesha" />
               <span>श्री गणेशाय नमः</span>
             </div>
+            {invitation && (
+              <MotionDiv
+                className="hero-guest"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.35 }}
+              >
+                <span className="hero-guest-label">An invitation for</span>
+                <p className="hero-guest-name">{invitation.name}</p>
+                {invitation.message && (
+                  <p className="hero-guest-message">{invitation.message}</p>
+                )}
+              </MotionDiv>
+            )}
             <p className="eyebrow hero-eyebrow">
               TWO HEARTS. TWO FAMILIES. ONE BEAUTIFUL BEGINNING.
             </p>
@@ -692,6 +729,7 @@ function Index() {
           {wedding.dateLabel.toUpperCase()} <Heart size={12} />
         </span>
       </footer>
+      <MusicPlayer />
     </MotionConfig>
   );
 }
