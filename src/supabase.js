@@ -43,7 +43,8 @@ export async function fetchInvitation(token, side) {
   return resolved ?? null;
 }
 
-const columns = "id, token, name, message, side, active, created_at, updated_at";
+const columns =
+  "id, token, name, message, side, active, created_at, updated_at";
 
 export async function getInvitationSession() {
   if (!supabase) return null;
@@ -58,6 +59,20 @@ export async function signInAdmin(email, password) {
 
 export async function signOutAdmin() {
   await supabase.auth.signOut();
+}
+
+/**
+ * Re-checks the current password before storing a new one, so a borrowed
+ * browser cannot silently rotate the credential of an unlocked session.
+ */
+export async function changeAdminPassword(email, currentPassword, newPassword) {
+  const { error: verifyError } = await supabase.auth.signInWithPassword({
+    email,
+    password: currentPassword,
+  });
+  if (verifyError) throw verifyError;
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  if (error) throw error;
 }
 
 /** True when the signed-in account is on the invitation admin allowlist. */

@@ -1844,6 +1844,9 @@ button {
 .admin-signin .admin-link {
   justify-self: start;
 }
+.admin-password {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 .admin-list {
   list-style: none;
   margin: 0;

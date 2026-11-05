@@ -1,18 +1,5 @@
 import {
-  Check,
-  Copy,
-  Eye,
-  EyeOff,
-  Link2,
-  LogOut,
-  Pencil,
-  Plus,
-  Trash2,
-  X,
-} from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import {
+  changeAdminPassword,
   checkAdminAccess,
   createInvitation,
   deleteInvitation,
@@ -25,6 +12,21 @@ import {
   supabaseConfigured,
   updateInvitation,
 } from "../supabase";
+import { createFileRoute } from "@tanstack/react-router";
+import {
+  Check,
+  Copy,
+  Eye,
+  EyeOff,
+  KeyRound,
+  Link2,
+  LogOut,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 export const Route = createFileRoute("/admin")({ component: Admin });
 
@@ -98,6 +100,92 @@ function SignIn({ onSignedIn }) {
   );
 }
 
+function ChangePassword({ email, onClose, onNotice }) {
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function submit(event) {
+    event.preventDefault();
+    setError("");
+    if (next.length < 8) {
+      setError("Use at least 8 characters for the new password.");
+      return;
+    }
+    if (next !== confirm) {
+      setError("The new passwords do not match.");
+      return;
+    }
+    if (next === current) {
+      setError("Choose a password that differs from the current one.");
+      return;
+    }
+    setBusy(true);
+    try {
+      await changeAdminPassword(email, current, next);
+      onNotice("Password updated");
+      onClose();
+    } catch (failure) {
+      setError(failure.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <form className="admin-panel admin-password" onSubmit={submit}>
+      <h2>Change password</h2>
+      <label>
+        <span>Current password</span>
+        <input
+          type="password"
+          autoComplete="current-password"
+          required
+          value={current}
+          onChange={(event) => setCurrent(event.target.value)}
+        />
+      </label>
+      <label>
+        <span>New password</span>
+        <input
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={8}
+          value={next}
+          onChange={(event) => setNext(event.target.value)}
+        />
+      </label>
+      <label>
+        <span>Confirm new password</span>
+        <input
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={8}
+          value={confirm}
+          onChange={(event) => setConfirm(event.target.value)}
+        />
+      </label>
+      <div className="admin-form-actions gap-2">
+        <button type="button" onClick={onClose}>
+          Cancel
+        </button>
+        <button className="admin-primary" type="submit" disabled={busy}>
+          {busy ? "Updating…" : "Update password"}
+        </button>
+      </div>
+      {error && <p className="admin-error admin-wide">{error}</p>}
+      <p className="admin-hint admin-wide">
+        Signed in as <strong>{email}</strong>. There is no email reset on this
+        project, so keep this password somewhere safe.
+      </p>
+    </form>
+  );
+}
+
 function InvitationRow({ invitation, onChanged, onDeleted, onNotice }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState({
@@ -154,7 +242,8 @@ function InvitationRow({ invitation, onChanged, onDeleted, onNotice }) {
   }
 
   function remove() {
-    if (!window.confirm(`Delete the invitation for ${invitation.name}?`)) return;
+    if (!window.confirm(`Delete the invitation for ${invitation.name}?`))
+      return;
     run(async () => {
       await deleteInvitation(invitation.id);
       onDeleted(invitation.id);
@@ -273,7 +362,11 @@ function InvitationRow({ invitation, onChanged, onDeleted, onNotice }) {
         <span>
           <Link2 size={13} /> Guest link
         </span>
-        <input readOnly value={link} onFocus={(event) => event.target.select()} />
+        <input
+          readOnly
+          value={link}
+          onFocus={(event) => event.target.select()}
+        />
       </label>
     </li>
   );
@@ -289,6 +382,8 @@ function Admin() {
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [adminEmail, setAdminEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const refresh = useCallback(async () => {
     setInvitations(await listInvitations());
@@ -300,6 +395,7 @@ function Admin() {
       setStatus("signed-out");
       return;
     }
+    setAdminEmail(session.user.email ?? "");
     try {
       const allowed = await checkAdminAccess();
       if (!allowed) {
@@ -431,14 +527,29 @@ function Admin() {
           </p>
         </div>
         <div className="admin-header-actions">
-          <a className="admin-link" href="/">
-            View invitation
-          </a>
+          <button
+            type="button"
+            onClick={() => setShowPassword((open) => !open)}
+            aria-expanded={showPassword}
+          >
+            <KeyRound size={15} /> Change password
+          </button>
           <button type="button" onClick={signOut}>
             <LogOut size={15} /> Sign out
           </button>
+          <a className="admin-link" href="/">
+            View invitation
+          </a>
         </div>
       </header>
+
+      {showPassword && (
+        <ChangePassword
+          email={adminEmail}
+          onClose={() => setShowPassword(false)}
+          onNotice={setNotice}
+        />
+      )}
 
       <form className="admin-panel admin-create" onSubmit={add}>
         <h2>New invitation</h2>
@@ -449,14 +560,18 @@ function Admin() {
             maxLength={120}
             placeholder="e.g. Ramesh & Family"
             value={draft.name}
-            onChange={(event) => setDraft({ ...draft, name: event.target.value })}
+            onChange={(event) =>
+              setDraft({ ...draft, name: event.target.value })
+            }
           />
         </label>
         <label>
           <span>Invitation version</span>
           <select
             value={draft.side}
-            onChange={(event) => setDraft({ ...draft, side: event.target.value })}
+            onChange={(event) =>
+              setDraft({ ...draft, side: event.target.value })
+            }
           >
             <option value="groom">Groom — Vishal weds Krishi</option>
             <option value="bride">Bride — Krishi weds Vishal</option>
