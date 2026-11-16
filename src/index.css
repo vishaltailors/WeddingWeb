@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;450;500;550;600&family=Italianno&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@400;450;500;550;600&family=Italianno&family=Noto+Sans+Gujarati:wght@400;500;600&family=Noto+Serif+Gujarati:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -2490,5 +2490,109 @@ button {
   .cover-sparkles,
   .cover-sheen {
     display: none;
+  }
+}
+
+/* Gujarati needs script-aware fonts and room for marks above and below letters. */
+:root[lang="gu"],
+:root[lang="gu"] .music-widget {
+  font-family: "Noto Sans Gujarati", sans-serif;
+}
+:root[lang="gu"]
+  :is(
+    h1,
+    h2,
+    h3,
+    .monogram,
+    .hero h1 .weds,
+    .hero-date,
+    .hero-note,
+    .art-caption,
+    .countdown-number,
+    .story-seal > span:last-child,
+    .image-footnote,
+    .couple-signature,
+    .event-number,
+    .event-subtitle,
+    .quote-section p,
+    .venue-content .venue-note,
+    .site-footer > p,
+    .cover-couple,
+    .cover-amp,
+    .cover-date,
+    .cover-guest,
+    .cover-message,
+    .cover-wax-mono,
+    .cover-wax-amp,
+    .cover-hint
+  ) {
+  font-family: "Noto Serif Gujarati", serif;
+  letter-spacing: 0;
+  line-height: 1.6;
+}
+:root[lang="gu"]
+  :is(
+    .eyebrow,
+    .hero-location,
+    .hero-scroll span,
+    .countdown-label,
+    .dress-code,
+    .story-seal > span:nth-child(2),
+    .site-footer > span,
+    .cover-eyebrow,
+    .cover-kicker,
+    .music-lyrics-label
+  ) {
+  letter-spacing: 0.4px;
+  line-height: 1.9;
+}
+:root[lang="gu"] .hero h1 {
+  font-size: clamp(64px, 6vw, 88px);
+  margin-block: 12px 18px;
+}
+:root[lang="gu"] .hero h1 .weds {
+  font-size: 28px;
+  margin: 0;
+}
+:root[lang="gu"]
+  :is(.hero-description, .story-content > p, .venue-content > p) {
+  font-size: 13px;
+  line-height: 2;
+}
+:root[lang="gu"] :is(.desktop-nav a, .calendar-button, .button, .theme-option) {
+  font-size: 12px;
+}
+:root[lang="gu"] :is(.eyebrow, .countdown-label, .dress-code) {
+  font-size: 10px;
+}
+:root[lang="gu"] .event-card h3 {
+  font-size: 26px;
+}
+:root[lang="gu"] .cover-couple {
+  font-size: 9cqw;
+}
+:root[lang="gu"] .cover-guest {
+  font-size: 8cqw;
+}
+:root[lang="gu"] .cover-message {
+  font-size: max(12px, 3.5cqw);
+}
+:root[lang="gu"] .cover-hint {
+  padding-inline: 16px;
+  text-align: center;
+}
+@media (max-width: 760px) {
+  :root[lang="gu"] .hero h1 {
+    font-size: clamp(60px, 16vw, 78px);
+  }
+  :root[lang="gu"] .calendar-button {
+    font-size: 10px;
+    gap: 6px;
+  }
+  :root[lang="gu"] .countdown-intro h2 {
+    font-size: 25px;
+  }
+  :root[lang="gu"] .art-caption {
+    max-width: 145px;
   }
 }

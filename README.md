@@ -112,6 +112,28 @@ Both sides use the same page and design system, switched via a URL query paramet
 - Navigation within the page preserves the selected `side`.
 - Share buttons and calendar downloads include the selected side in the URL / event metadata.
 
+### Invitation Language
+
+Add `lang=gu` to display the guest-facing invitation in Gujarati:
+
+| URL | Language |
+| --- | --- |
+| `/?lang=gu` | Gujarati, groom's side |
+| `/?side=bride&lang=gu` | Gujarati, bride's side |
+| `/?side=groom&invite=<token>&lang=gu` | Personalised invitation in Gujarati |
+| `/?lang=en` or no language parameter | English |
+
+`language=gu`, `lang=gu-IN`, and `lang=gujarati` are also accepted.
+Unsupported values fall back to English. The URL determines the language;
+browser preferences and previous visits do not override it. Shared invitation
+links retain the selected language, and calendar downloads use translated text
+without changing event times.
+
+Gujarati copy is maintained in `src/translations-gu.js`. The admin screen
+remains in English, and song lyrics remain in their original Hindi. Guest names
+and custom messages are displayed exactly as entered in the admin screen;
+enter them in Gujarati when creating a Gujarati personal greeting.
+
 ---
 
 ## 💌 Personalised Invitations
@@ -121,13 +143,13 @@ link carries an unguessable 64-character bearer token, and the page asks the
 database for the single invitation matching that token. Editing the link cannot
 change a guest's name or message, and no endpoint ever returns the guest list.
 
-| URL                                  | Result                                             |
-| ------------------------------------ | -------------------------------------------------- |
-| `/`                                  | Standard groom invitation                          |
-| `/?side=bride`                       | Standard bride invitation                          |
-| `/?side=groom&invite=<token>`        | Personalised groom invitation                      |
-| `/?side=bride&invite=<token>`        | Personalised bride invitation                      |
-| `/?side=groom&invite=made-up-token`  | Standard groom invitation (token discarded)        |
+| URL                                 | Result                                      |
+| ----------------------------------- | ------------------------------------------- |
+| `/`                                 | Standard groom invitation                   |
+| `/?side=bride`                      | Standard bride invitation                   |
+| `/?side=groom&invite=<token>`       | Personalised groom invitation               |
+| `/?side=bride&invite=<token>`       | Personalised bride invitation               |
+| `/?side=groom&invite=made-up-token` | Standard groom invitation (token discarded) |
 
 Each token is locked to the side it was created for, so changing `side` in the
 address bar drops the personalisation instead of retargeting it. A paused,
@@ -159,14 +181,24 @@ on conflict (email) do nothing;
 The list is checked against the verified `email` claim on the signed-in
 account's JWT. Deleting a row revokes that account on its next request.
 
+### Changing the password
+
+Sign in at `/admin` and use **Change password** in the header. The current
+password is re-checked before the new one is stored, so an unattended browser
+cannot be used to rotate the credential.
+
+This project has no email-based reset, so keep the password somewhere safe. If
+it is ever lost, set a new one from the Supabase dashboard under
+**Authentication → Users**.
+
 ### Schema
 
-| Object                                     | Purpose                                                                    |
-| ------------------------------------------ | -------------------------------------------------------------------------- |
-| `public.invitations`                       | Guest records: name, message, locked side, active flag, bearer token       |
-| `public.resolve_invitation(token, side)`   | Returns at most one active invitation for the matching token **and** side  |
-| `public.is_invitation_admin()`             | True when the signed-in account is on the allowlist                        |
-| `private.invitation_admins`                | The admin allowlist, never exposed to the browser                          |
+| Object                                   | Purpose                                                                   |
+| ---------------------------------------- | ------------------------------------------------------------------------- |
+| `public.invitations`                     | Guest records: name, message, locked side, active flag, bearer token      |
+| `public.resolve_invitation(token, side)` | Returns at most one active invitation for the matching token **and** side |
+| `public.is_invitation_admin()`           | True when the signed-in account is on the allowlist                       |
+| `private.invitation_admins`              | The admin allowlist, never exposed to the browser                         |
 
 Anonymous visitors receive no `select`, `insert`, `update`, or `delete` grant on
 `public.invitations`. Their only access path is the resolver, which requires both

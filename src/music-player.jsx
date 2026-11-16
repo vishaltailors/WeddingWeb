@@ -1,4 +1,5 @@
 import songSrc from "./assets/song/our-love-festival.mp3";
+import { useLanguage } from "./i18n";
 import {
   ChevronDown,
   ChevronLeft,
@@ -58,6 +59,7 @@ function getCurrentLyricIndex(currentTime) {
 const MotionDiv = motion.div;
 
 export default function MusicPlayer() {
+  const { t } = useLanguage();
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [awaitingInteraction, setAwaitingInteraction] = useState(true);
@@ -189,7 +191,7 @@ export default function MusicPlayer() {
           exit={{ opacity: 0, y: 24, scale: 0.97 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           role="region"
-          aria-label="Background music player"
+          aria-label={t("Background music player")}
           onPointerLeave={() => setCompactControlsVisible(false)}
         >
           {/* Collapsed / main row */}
@@ -200,7 +202,7 @@ export default function MusicPlayer() {
               onPointerDown={() => {
                 if (compact) setCompactControlsVisible(true);
               }}
-              aria-label={playing ? "Pause music" : "Play music"}
+              aria-label={t(playing ? "Pause music" : "Play music")}
             >
               {playing ? <Pause size={15} /> : <Play size={15} />}
             </button>
@@ -216,12 +218,13 @@ export default function MusicPlayer() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.25 }}
                   >
-                    Tap to start music
+                    {t("Tap to start music")}
                   </MotionDiv>
                 ) : currentLyric && playing ? (
                   <MotionDiv
                     key={currentIndex}
                     className="music-lyric-current"
+                    lang="hi"
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
@@ -238,7 +241,7 @@ export default function MusicPlayer() {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.25 }}
                   >
-                    {playing ? "Playing your song" : "Music paused"}
+                    {t(playing ? "Playing your song" : "Music paused")}
                   </MotionDiv>
                 )}
               </AnimatePresence>
@@ -248,7 +251,7 @@ export default function MusicPlayer() {
               className="music-expand-btn"
               hidden={compact}
               onClick={() => setExpanded((v) => !v)}
-              aria-label={expanded ? "Collapse lyrics" : "View full lyrics"}
+              aria-label={t(expanded ? "Collapse lyrics" : "View full lyrics")}
               aria-expanded={expanded}
             >
               {expanded ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
@@ -261,10 +264,10 @@ export default function MusicPlayer() {
                 setExpanded(false);
                 setCompactControlsVisible(false);
               }}
-              aria-label={
-                compact ? "Show music player lyrics" : "Minimize music player"
-              }
-              title={compact ? "Show lyrics" : "Minimize player"}
+              aria-label={t(
+                compact ? "Show music player lyrics" : "Minimize music player",
+              )}
+              title={t(compact ? "Show lyrics" : "Minimize player")}
               aria-expanded={!compact}
             >
               {compact ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
@@ -277,7 +280,7 @@ export default function MusicPlayer() {
                 audioRef.current?.pause();
                 setDismissed(true);
               }}
-              aria-label="Close music player"
+              aria-label={t("Close music player")}
             >
               ×
             </button>
@@ -294,10 +297,11 @@ export default function MusicPlayer() {
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="music-lyrics-scroll" ref={fullLyricsRef}>
-                  <p className="music-lyrics-label">FULL LYRICS</p>
+                  <p className="music-lyrics-label">{t("FULL LYRICS")}</p>
                   {LYRICS.map((line, i) => (
                     <p
                       key={i}
+                      lang="hi"
                       data-active={i === currentIndex ? "true" : "false"}
                       className={`music-lyric-line ${i === currentIndex ? "active" : ""}`}
                     >

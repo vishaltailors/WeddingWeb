@@ -6,6 +6,7 @@ import morningImage from "../assets/images/wedding-morning-view.jpg";
 import nightPheraImage from "../assets/images/wedding-night-phera-view.jpg";
 import nightImage from "../assets/images/wedding-night-view.jpg";
 import Ganesha from "../ganesha";
+import { formatDigits, normalizeLanguage, useLanguage } from "../i18n";
 import InvitationCover from "../invitation-cover";
 import MusicPlayer from "../music-player";
 import { fetchInvitation, normalizeInviteToken } from "../supabase";
@@ -35,6 +36,7 @@ export const Route = createFileRoute("/")({
   validateSearch: (search) => ({
     side: normalizeSide(search.side),
     invite: normalizeInviteToken(search.invite),
+    lang: normalizeLanguage(search.lang ?? search.language),
   }),
   component: Index,
 });
@@ -102,6 +104,7 @@ function getRemaining(date) {
 }
 
 function Countdown({ date }) {
+  const { t, language } = useLanguage();
   const [remaining, setRemaining] = useState(() => getRemaining(date));
   useEffect(() => {
     const timer = setInterval(() => setRemaining(getRemaining(date)), 1000);
@@ -109,20 +112,20 @@ function Countdown({ date }) {
   }, [date]);
   const arrived = Object.values(remaining).every((value) => value === 0);
   return (
-    <section className="countdown-section" aria-label="Wedding countdown">
+    <section className="countdown-section" aria-label={t("Wedding countdown")}>
       <MotionDiv className="countdown-intro" {...reveal}>
-        <span className="eyebrow">EVERY MOMENT BRINGS US CLOSER</span>
+        <span className="eyebrow">{t("EVERY MOMENT BRINGS US CLOSER")}</span>
         <h2>
-          {arrived ? "Our forever has begun." : "Counting down to forever."}
+          {t(arrived ? "Our forever has begun." : "Counting down to forever.")}
         </h2>
       </MotionDiv>
       <MotionDiv className="countdown" {...reveal}>
         {Object.entries(remaining).map(([label, value]) => (
           <div className="countdown-unit" key={label}>
             <span className="countdown-number">
-              {String(value).padStart(2, "0")}
+              {formatDigits(String(value).padStart(2, "0"), language)}
             </span>
-            <span className="countdown-label">{label}</span>
+            <span className="countdown-label">{t(label)}</span>
           </div>
         ))}
       </MotionDiv>
@@ -133,7 +136,7 @@ function Countdown({ date }) {
   );
 }
 
-function saveDate(wedding) {
+function saveDate(wedding, t) {
   const format = (date) =>
     new Date(date)
       .toISOString()
@@ -148,9 +151,9 @@ function saveDate(wedding) {
     `DTSTAMP:${format(new Date())}`,
     `DTSTART:${format(wedding.date)}`,
     `DTEND:${format(wedding.endDate)}`,
-    `SUMMARY:${wedding.couple} — Wedding`,
+    `SUMMARY:${wedding.couple} — ${t("Wedding")}`,
     `LOCATION:${wedding.venue}\\, ${wedding.location.replaceAll(",", "\\,")}`,
-    `DESCRIPTION:Join us to celebrate the wedding of ${wedding.coupleNames}.`,
+    `DESCRIPTION:${t("Join us to celebrate the wedding of {{couple}}.", { couple: wedding.coupleNames })}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
@@ -166,7 +169,8 @@ function saveDate(wedding) {
 
 function Index() {
   const { side, invite } = Route.useSearch();
-  const wedding = getWedding(side);
+  const { t, language } = useLanguage();
+  const wedding = getWedding(side, language);
   // undefined while a guest's invitation is still loading, null when there is none.
   const [invitation, setInvitation] = useState(undefined);
   const [coverOpen, setCoverOpen] = useState(true);
@@ -180,7 +184,8 @@ function Index() {
     timeZone: "Asia/Kolkata",
   })
     .format(new Date(wedding.date))
-    .split("/");
+    .split("/")
+    .map((part) => formatDigits(part, language));
   const [menuOpen, setMenuOpen] = useState(false);
   const [shareState, setShareState] = useState("");
   const [theme, setTheme] = useState(getStoredTheme);
@@ -219,14 +224,17 @@ function Index() {
   }, [invite, side]);
 
   useEffect(() => {
-    document.title = `${wedding.title} | A Beautiful Beginning`;
+    document.title = `${wedding.title} | ${t("A Beautiful Beginning")}`;
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute(
         "content",
-        `With hearts full of love, ${wedding.coupleNames} invite you to celebrate their beautiful beginning. Discover the celebrations, wedding venue, and countdown to forever.`,
+        t(
+          "With hearts full of love, {{couple}} invite you to celebrate their beautiful beginning. Discover the celebrations, wedding venue, and countdown to forever.",
+          { couple: wedding.coupleNames },
+        ),
       );
-  }, [wedding.title, wedding.coupleNames]);
+  }, [wedding.title, wedding.coupleNames, t]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -247,21 +255,23 @@ function Index() {
     const url = new URL(window.location.href);
     url.hash = "";
     url.searchParams.set("side", side);
+    url.searchParams.set("lang", language);
     if (!invitation) url.searchParams.delete("invite");
     const data = {
       title: wedding.title,
-      text: `Join us for our wedding on ${wedding.dateLabel}.`,
+      text: t("Join us for our wedding on {{date}}.", {
+        date: wedding.dateLabel,
+      }),
       url: url.href,
     };
     try {
       if (navigator.share) await navigator.share(data);
       else {
         await navigator.clipboard.writeText(data.url);
-        setShareState("Invitation link copied");
+        setShareState("copied");
       }
     } catch (error) {
-      if (error.name !== "AbortError")
-        setShareState("Copy the invitation link from your address bar.");
+      if (error.name !== "AbortError") setShareState("failed");
     }
   }
 
@@ -278,35 +288,38 @@ function Index() {
         )}
       </AnimatePresence>
       <a className="skip-link" href="#main" inert={showCover}>
-        Skip to invitation
+        {t("Skip to invitation")}
       </a>
       <header className="site-header" inert={showCover}>
         <a
           className="monogram"
           href="#home"
-          aria-label={`${wedding.coupleNames} home`}
+          aria-label={t("{{couple}} home", { couple: wedding.coupleNames })}
         >
           {wedding.firstInitial}
           <span>&</span>
           {wedding.secondInitial}
           <span className="monogram-dot">.</span>
         </a>
-        <nav className="desktop-nav" aria-label="Main navigation">
+        <nav className="desktop-nav" aria-label={t("Main navigation")}>
           {links.map((link) => (
             <a key={link.href} href={link.href}>
-              {link.label}
+              {t(link.label)}
             </a>
           ))}
         </nav>
         <div className="header-actions">
           <ThemeMenu theme={theme} onChange={changeTheme} />
-          <button className="calendar-button" onClick={() => saveDate(wedding)}>
-            <CalendarDays size={15} /> <span>Save the date</span>
+          <button
+            className="calendar-button"
+            onClick={() => saveDate(wedding, t)}
+          >
+            <CalendarDays size={15} /> <span>{t("Save the date")}</span>
           </button>
           <button
             className="menu-button"
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? "Close navigation" : "Open navigation"}
+            aria-label={t(menuOpen ? "Close navigation" : "Open navigation")}
             aria-expanded={menuOpen}
             aria-controls="mobile-nav"
           >
@@ -318,7 +331,7 @@ function Index() {
             <MotionNav
               id="mobile-nav"
               className="mobile-nav"
-              aria-label="Mobile navigation"
+              aria-label={t("Mobile navigation")}
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
@@ -329,7 +342,7 @@ function Index() {
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
                 >
-                  {link.label}
+                  {t(link.label)}
                   <ArrowUpRight size={17} />
                 </a>
               ))}
@@ -358,16 +371,16 @@ function Index() {
           >
             <div className="hero-blessing">
               <Ganesha className="hero-ganesha" />
-              <span>श्री गणेशाय नमः</span>
+              <span>{t("श्री गणेशाय नमः")}</span>
             </div>
             <p className="eyebrow hero-eyebrow">
-              TWO HEARTS. TWO FAMILIES. ONE BEAUTIFUL BEGINNING.
+              {t("TWO HEARTS. TWO FAMILIES. ONE BEAUTIFUL BEGINNING.")}
             </p>
             <h1>
               <span>{wedding.firstName}</span>
               <span className="weds">
                 <i />
-                <span>weds</span>
+                <span>{t("weds")}</span>
                 <i />
               </span>
               <span>
@@ -376,8 +389,9 @@ function Index() {
               </span>
             </h1>
             <p className="hero-description">
-              With hearts full of love and the blessings of our families, we
-              invite you to be a part of our forever.
+              {t(
+                "With hearts full of love and the blessings of our families, we invite you to be a part of our forever.",
+              )}
             </p>
             <div className="hero-date">
               <span className="date-line" />
@@ -392,18 +406,18 @@ function Index() {
               {wedding.city.toUpperCase()}, {wedding.region.toUpperCase()}
             </p>
             <a className="button primary-button" href="#celebrations">
-              You’re invited <ArrowUpRight size={17} />
+              {t("You’re invited")} <ArrowUpRight size={17} />
             </a>
             <span className="hero-note">
-              A celebration of love, and all of you.
+              {t("A celebration of love, and all of you.")}
             </span>
           </MotionDiv>
           <a className="hero-scroll" href="#our-story">
-            <span>THE BEGINNING OF FOREVER</span>
+            <span>{t("THE BEGINNING OF FOREVER")}</span>
             <ArrowDown size={15} />
           </a>
           <span className="art-caption">
-            A little tradition. A little magic. A lifetime of love.
+            {t("A little tradition. A little magic. A lifetime of love.")}
           </span>
         </section>
 
@@ -416,56 +430,56 @@ function Index() {
                 src={
                   resolvedTheme === "dark" ? nightPheraImage : morningPheraImage
                 }
-                alt={`An illustration of ${wedding.coupleNames} exchanging garlands beneath a flower-covered wedding mandap`}
+                alt={t(
+                  "An illustration of {{couple}} exchanging garlands beneath a flower-covered wedding mandap",
+                  { couple: wedding.coupleNames },
+                )}
                 loading="lazy"
               />
             </div>
             <div className="story-seal">
               <Heart size={18} strokeWidth={1.2} />
-              <span>MEANT TO BE</span>
+              <span>{t("MEANT TO BE")}</span>
               <span>
                 {wedding.firstInitial} + {wedding.secondInitial}
               </span>
             </div>
             <span className="image-footnote">
-              A new chapter, written together.
+              {t("A new chapter, written together.")}
             </span>
           </MotionDiv>
           <MotionDiv className="story-content" {...reveal}>
-            <span className="eyebrow">OUR BEAUTIFUL BEGINNING</span>
+            <span className="eyebrow">{t("OUR BEAUTIFUL BEGINNING")}</span>
             <h2>
-              A little destiny.
-              <br />A whole lot of <em>love.</em>
+              {t("A little destiny.")}
+              <br />
+              {t("A whole lot of")} <em>{t("love.")}</em>
             </h2>
             <Ornament />
             <p>
-              It all began on <strong>27th July 2025</strong>, when two
-              strangers met for the very first time, knowing little about each
-              other and even less about the beautiful journey that lay ahead. We
-              started with a simple "Hello," shared a little about ourselves,
-              and spent around half an hour talking before heading back to our
-              respective homes. Little did we know that this simple meeting was
-              the beginning of something special.
+              {t("It all began on")} <strong>{t("27th July 2025")}</strong>
+              {t(
+                ', when two strangers met for the very first time, knowing little about each other and even less about the beautiful journey that lay ahead. We started with a simple "Hello," shared a little about ourselves, and spent around half an hour talking before heading back to our respective homes. Little did we know that this simple meeting was the beginning of something special.',
+              )}
             </p>
             <p>
-              A few days later, over dinner at a restaurant, we talked about our
-              lives, our families, our friends, and the dreams we hoped to
-              fulfil. Somewhere between those conversations and shared smiles,
-              we felt a quiet certainty that maybe, this was going to be
-              something special. There was no grand movie moment — just a simple
-              feeling that we could be good together.
+              {t(
+                "A few days later, over dinner at a restaurant, we talked about our lives, our families, our friends, and the dreams we hoped to fulfil. Somewhere between those conversations and shared smiles, we felt a quiet certainty that maybe, this was going to be something special. There was no grand movie moment — just a simple feeling that we could be good together.",
+              )}
             </p>
             <p>
-              As more meetings followed and our families grew closer, that
-              little feeling turned into something we both wanted to hold on to.
-              And on <strong>24th August 2025</strong>, we made it official,
-              choosing to begin our journey together.
+              {t(
+                "As more meetings followed and our families grew closer, that little feeling turned into something we both wanted to hold on to. And on",
+              )}{" "}
+              <strong>{t("24th August 2025")}</strong>
+              {t(
+                ", we made it official, choosing to begin our journey together.",
+              )}
             </p>
             <p>
-              Some connections feel as though they were always meant to be. Ours
-              is a story of two hearts finding a home in each other, two
-              families coming together, and a beautiful new chapter waiting to
-              unfold.
+              {t(
+                "Some connections feel as though they were always meant to be. Ours is a story of two hearts finding a home in each other, two families coming together, and a beautiful new chapter waiting to unfold.",
+              )}
             </p>
             <div className="couple-signature">
               {wedding.firstName} <span>&</span> {wedding.secondName}
@@ -475,12 +489,14 @@ function Index() {
 
         <section className="celebrations-section section" id="celebrations">
           <MotionDiv className="section-heading" {...reveal}>
-            <span className="eyebrow">LET THE FESTIVITIES BEGIN</span>
+            <span className="eyebrow">{t("LET THE FESTIVITIES BEGIN")}</span>
             <h2>
-              One love. <em>So many celebrations.</em>
+              {t("One love.")} <em>{t("So many celebrations.")}</em>
             </h2>
             <p>
-              A little colour, a little dancing, and memories for a lifetime.
+              {t(
+                "A little colour, a little dancing, and memories for a lifetime.",
+              )}
             </p>
             <Ornament />
           </MotionDiv>
@@ -499,7 +515,9 @@ function Index() {
                   {...reveal}
                   transition={{ ...reveal.transition, delay: index * 0.12 }}
                 >
-                  <span className="event-number">0{index + 1}</span>
+                  <span className="event-number">
+                    {formatDigits(`0${index + 1}`, language)}
+                  </span>
                   <div className="event-icon">
                     <Icon size={35} strokeWidth={1} />
                   </div>
@@ -514,7 +532,7 @@ function Index() {
                   </div>
                   <div className="event-date">
                     <Clock3 size={14} />
-                    <span>{event.time} onwards</span>
+                    <span>{t("{{time}} onwards", { time: event.time })}</span>
                   </div>
                   <p className="event-description">{event.description}</p>
                   <span className="dress-code">{event.dress}</span>
@@ -523,8 +541,12 @@ function Index() {
             })}
           </div>
           <p className="celebrations-note">
-            <MapPin size={14} /> All celebrations except Haldi at{" "}
-            {wedding.venue}, {wedding.area} <span>·</span> Times in IST
+            <MapPin size={14} />{" "}
+            {t("All celebrations except Haldi at {{venue}}, {{area}}", {
+              venue: wedding.venue,
+              area: wedding.area,
+            })}{" "}
+            <span>·</span> {t("Times in IST")}
           </p>
         </section>
 
@@ -532,11 +554,13 @@ function Index() {
           <MotionDiv {...reveal}>
             <Lotus className="quote-lotus" />
             <p>
-              “Together is a beautiful
+              {t("“Together is a beautiful")}
               <br />
-              place to <em>be.</em>”
+              {t("place to")} <em>{t("be.")}</em>”
             </p>
-            <span className="eyebrow">TWO SOULS. SEVEN VOWS. ONE JOURNEY.</span>
+            <span className="eyebrow">
+              {t("TWO SOULS. SEVEN VOWS. ONE JOURNEY.")}
+            </span>
           </MotionDiv>
           <Flower2 className="quote-flower left" aria-hidden="true" />
           <Flower2 className="quote-flower right" aria-hidden="true" />
@@ -544,15 +568,16 @@ function Index() {
 
         <section className="venue-section section" id="venue">
           <MotionDiv className="venue-content" {...reveal}>
-            <span className="eyebrow">WHERE OUR FOREVER BEGINS</span>
+            <span className="eyebrow">{t("WHERE OUR FOREVER BEGINS")}</span>
             <h2>
-              A place for love.
+              {t("A place for love.")}
               <br />
-              <em>A space for all of us.</em>
+              <em>{t("A space for all of us.")}</em>
             </h2>
             <p>
-              Meet us beneath the flowers, where familiar faces, warm embraces,
-              and a little wedding magic await.
+              {t(
+                "Meet us beneath the flowers, where familiar faces, warm embraces, and a little wedding magic await.",
+              )}
             </p>
             <div className="venue-address">
               <MapPin size={23} strokeWidth={1.3} />
@@ -567,9 +592,9 @@ function Index() {
               target="_blank"
               rel="noreferrer"
             >
-              Get directions <ArrowUpRight size={17} />
+              {t("Get directions")} <ArrowUpRight size={17} />
             </a>
-            <p className="venue-note">We can’t wait to welcome you.</p>
+            <p className="venue-note">{t("We can’t wait to welcome you.")}</p>
           </MotionDiv>
           <MotionDiv className="venue-card" {...reveal}>
             <div className="venue-illustration">
@@ -579,20 +604,23 @@ function Index() {
                     ? nightHallMapCard
                     : morningHallMapCard
                 }
-                alt={`The floral mandap at ${wedding.venue}, ${wedding.area}`}
+                alt={t("The floral mandap at {{venue}}, {{area}}", {
+                  venue: wedding.venue,
+                  area: wedding.area,
+                })}
                 loading="lazy"
               />
             </div>
             <div className="venue-card-caption">
               <div>
-                <span className="eyebrow">THE WEDDING VENUE</span>
-                <h3>Meet us in {wedding.city}</h3>
+                <span className="eyebrow">{t("THE WEDDING VENUE")}</span>
+                <h3>{t("Meet us in {{city}}", { city: wedding.city })}</h3>
               </div>
               <a
                 href={wedding.mapsUrl}
                 target="_blank"
                 rel="noreferrer"
-                aria-label="Open venue in Google Maps"
+                aria-label={t("Open venue in Google Maps")}
               >
                 <ArrowUpRight size={24} />
               </a>
@@ -604,46 +632,51 @@ function Index() {
           <MotionDiv {...reveal}>
             <Ornament />
             <span className="eyebrow">
-              WITH LOVE, FROM OUR FAMILIES TO YOURS
+              {t("WITH LOVE, FROM OUR FAMILIES TO YOURS")}
             </span>
             <h2>
-              Our day is more beautiful
+              {t("Our day is more beautiful")}
               <br />
-              <em>with you in it.</em>
+              <em>{t("with you in it.")}</em>
             </h2>
             <p>
-              Your presence is the greatest gift.
+              {t("Your presence is the greatest gift.")}
               <br />
-              Come with your blessings. Leave with beautiful memories.
+              {t("Come with your blessings. Leave with beautiful memories.")}
             </p>
             <button
               className="button primary-button"
-              onClick={() => saveDate(wedding)}
+              onClick={() => saveDate(wedding, t)}
             >
-              <CalendarDays size={16} /> Save our date
+              <CalendarDays size={16} /> {t("Save our date")}
             </button>
             <button className="share-button" onClick={shareInvitation}>
-              {shareState === "Invitation link copied" ? (
+              {shareState === "copied" ? (
                 <Check size={15} />
               ) : (
                 <Share2 size={15} />
               )}{" "}
-              Share the invitation
+              {t("Share the invitation")}
             </button>
             <div className="share-status" role="status">
-              {shareState}
+              {shareState &&
+                t(
+                  shareState === "copied"
+                    ? "Invitation link copied"
+                    : "Copy the invitation link from your address bar.",
+                )}
             </div>
           </MotionDiv>
         </section>
       </main>
       <footer className="site-footer" inert={showCover}>
-        <a className="monogram" href="#home" aria-label="Back to top">
+        <a className="monogram" href="#home" aria-label={t("Back to top")}>
           {wedding.firstInitial}
           <span>&</span>
           {wedding.secondInitial}
           <span className="monogram-dot">.</span>
         </a>
-        <p>Made with love, for a lifetime of it.</p>
+        <p>{t("Made with love, for a lifetime of it.")}</p>
         <span>
           {wedding.dateLabel.toUpperCase()} <Heart size={12} />
         </span>

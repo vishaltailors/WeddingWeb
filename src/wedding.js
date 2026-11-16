@@ -1,3 +1,5 @@
+import { createTranslator, normalizeLanguage } from "./i18n.js";
+
 const sharedWedding = {
   date: "2026-12-12T16:00:00+05:30",
   endDate: "2026-12-12T23:00:00+05:30",
@@ -131,17 +133,47 @@ export function normalizeSide(side) {
   return side === "bride" ? "bride" : "groom";
 }
 
-export function getWedding(side) {
+export function getWedding(side, language = "en") {
   const selectedSide = normalizeSide(side);
-  const details = weddingSides[selectedSide];
+  const source = weddingSides[selectedSide];
+  const t = createTranslator(normalizeLanguage(language));
+  const details = {
+    ...source,
+    ...Object.fromEntries(
+      [
+        "firstName",
+        "secondName",
+        "dateLabel",
+        "venue",
+        "location",
+        "area",
+        "city",
+        "region",
+      ].map((key) => [key, t(source[key])]),
+    ),
+    events: source.events.map((event) => ({
+      ...event,
+      ...Object.fromEntries(
+        ["name", "subtitle", "date", "time", "description", "dress"].map(
+          (key) => [key, t(event[key])],
+        ),
+      ),
+    })),
+  };
   return {
     ...details,
     side: selectedSide,
-    firstInitial: details.firstName[0],
-    secondInitial: details.secondName[0],
+    firstInitial: source.firstName[0],
+    secondInitial: source.secondName[0],
     couple: `${details.firstName} & ${details.secondName}`,
-    coupleNames: `${details.firstName} and ${details.secondName}`,
-    title: `${details.firstName} Weds ${details.secondName}`,
-    slug: `${details.firstName.toLowerCase()}-and-${details.secondName.toLowerCase()}`,
+    coupleNames: t("{{first}} and {{second}}", {
+      first: details.firstName,
+      second: details.secondName,
+    }),
+    title: t("{{first}} Weds {{second}}", {
+      first: details.firstName,
+      second: details.secondName,
+    }),
+    slug: `${source.firstName.toLowerCase()}-and-${source.secondName.toLowerCase()}`,
   };
 }

@@ -1,4 +1,5 @@
 import Ganesha from "./ganesha";
+import { formatDigits, useLanguage } from "./i18n";
 import {
   motion,
   useMotionTemplate,
@@ -279,6 +280,7 @@ function Flourish() {
 
 /** The printed front of the card. */
 function CardFace({ wedding, guest, pending, glare }) {
+  const { t, language } = useLanguage();
   const dateParts = new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "2-digit",
@@ -286,7 +288,8 @@ function CardFace({ wedding, guest, pending, glare }) {
     timeZone: "Asia/Kolkata",
   })
     .format(new Date(wedding.date))
-    .split("/");
+    .split("/")
+    .map((part) => formatDigits(part, language));
 
   return (
     <MotionDiv
@@ -301,10 +304,10 @@ function CardFace({ wedding, guest, pending, glare }) {
 
       <MotionDiv className="cover-blessing" variants={faceItem}>
         <Ganesha className="cover-ganesha" />
-        <span>॥ श्री गणेशाय नमः ॥</span>
+        <span>{t("॥ श्री गणेशाय नमः ॥")}</span>
       </MotionDiv>
       <MotionP className="cover-eyebrow" variants={faceItem}>
-        SHUBH VIVAH
+        {t("SHUBH VIVAH")}
       </MotionP>
       <MotionP className="cover-couple" id="cover-title" variants={faceItem}>
         {wedding.firstName}
@@ -318,7 +321,7 @@ function CardFace({ wedding, guest, pending, glare }) {
         <Flourish />
       </MotionDiv>
       <MotionP className="cover-eyebrow" variants={faceItem}>
-        CORDIALLY INVITING
+        {t("CORDIALLY INVITING")}
       </MotionP>
       <MotionDiv className="cover-guest-block" variants={faceItem}>
         {pending ? (
@@ -369,6 +372,7 @@ export default function InvitationCover({
   pending,
   onOpen,
 }) {
+  const { t } = useLanguage();
   const [opening, setOpening] = useState(false);
   const reduceMotion = useReducedMotion();
   const tiltX = useSpring(0, { stiffness: 90, damping: 20 });
@@ -384,12 +388,13 @@ export default function InvitationCover({
         name: invitation.name,
         message:
           invitation.message ||
-          "Your presence would make our celebration complete.",
+          t("Your presence would make our celebration complete."),
       }
     : {
-        name: "You & Your Family",
-        message:
+        name: t("You & Your Family"),
+        message: t(
           "With the blessings of our elders, we request the pleasure of your company.",
+        ),
       };
 
   // The page underneath must not scroll while the card is closed.
@@ -471,7 +476,7 @@ export default function InvitationCover({
           ease,
         }}
       >
-        <i /> A WEDDING INVITATION <i />
+        <i /> {t("A WEDDING INVITATION")} <i />
       </MotionP>
 
       <MotionDiv
@@ -527,7 +532,9 @@ export default function InvitationCover({
           <MotionButton
             className="cover-seal"
             type="button"
-            aria-label={`Open the invitation from ${wedding.coupleNames}`}
+            aria-label={t("Open the invitation from {{couple}}", {
+              couple: wedding.coupleNames,
+            })}
             onClick={open}
             disabled={opening}
             transition={
@@ -548,7 +555,7 @@ export default function InvitationCover({
           animate={{ opacity: opening ? 0 : 1 }}
           transition={{ duration: opening ? 0.5 : 1, delay: opening ? 0 : 2.6 }}
         >
-          Tap the seal to open your invitation
+          {t("Tap the seal to open your invitation")}
         </MotionP>
       </MotionDiv>
     </MotionDiv>

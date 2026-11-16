@@ -1,3 +1,4 @@
+import { useLanguage } from "./i18n";
 import { Check, ChevronDown, Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useRef } from "react";
 
@@ -8,6 +9,7 @@ const options = [
 ];
 
 export default function ThemeMenu({ theme, onChange }) {
+  const { t } = useLanguage();
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
   const Icon = options.find((option) => option.value === theme).icon;
@@ -42,13 +44,15 @@ export default function ThemeMenu({ theme, onChange }) {
       <summary
         className="theme-trigger"
         ref={triggerRef}
-        aria-label={`Choose theme, current preference: ${options.find((option) => option.value === theme).label}`}
+        aria-label={t("Choose theme, current preference: {{theme}}", {
+          theme: t(options.find((option) => option.value === theme).label),
+        })}
       >
         <Icon size={17} aria-hidden="true" />
         <ChevronDown size={12} aria-hidden="true" />
       </summary>
       <fieldset className="theme-options">
-        <legend>Appearance</legend>
+        <legend>{t("Appearance")}</legend>
         {options.map(({ value, label, icon }) => {
           const OptionIcon = icon;
           return (
@@ -64,7 +68,7 @@ export default function ThemeMenu({ theme, onChange }) {
               }}
             >
               <OptionIcon size={16} aria-hidden="true" />
-              <span>{label}</span>
+              <span>{t(label)}</span>
               {theme === value && <Check size={14} aria-hidden="true" />}
             </button>
           );
