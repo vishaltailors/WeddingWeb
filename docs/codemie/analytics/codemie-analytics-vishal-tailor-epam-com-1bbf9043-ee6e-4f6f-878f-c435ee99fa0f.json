@@ -1,0 +1,677 @@
+{
+  "meta": {
+    "generatedAt": "2026-11-05T08:14:58.725Z",
+    "rangeLabel": "all",
+    "agents": [
+      "claude"
+    ],
+    "projectFilter": "all",
+    "totals": {
+      "sessions": 1,
+      "durationMs": 2466034,
+      "turns": 49,
+      "files": 18,
+      "netLines": 410,
+      "toolCallsTotal": 56,
+      "toolSuccessRate": 96.4,
+      "totalCostUSD": 4.282471060000001,
+      "cacheReadCostUSD": 1.2810486600000002,
+      "pricedSessions": 1
+    },
+    "unpricedModels": [],
+    "estimatedModels": [],
+    "localModels": [],
+    "coverage": [
+      {
+        "agentName": "claude",
+        "total": 1,
+        "priced": 1,
+        "withLog": 1
+      }
+    ],
+    "userEmail": "vishal_tailor@epam.com",
+    "periodStart": "2026-11-05T07:33:49.742Z",
+    "periodEnd": "2026-11-05T08:14:55.776Z"
+  },
+  "sessions": [
+    {
+      "sessionId": "1bbf9043-ee6e-4f6f-878f-c435ee99fa0f",
+      "agentName": "claude",
+      "provider": "ai-run-sso",
+      "title": "/model",
+      "project": "/Users/vishaltailor/Desktop/Projects/wedding-web",
+      "branch": "main",
+      "startTime": 1793864029742,
+      "durationMs": 2466034,
+      "turns": 49,
+      "fileOps": 18,
+      "linesAdded": 410,
+      "linesRemoved": 0,
+      "linesModified": 0,
+      "netLines": 410,
+      "filesChanged": 1,
+      "filesWritten": 1,
+      "filesEdited": 0,
+      "toolCallsTotal": 56,
+      "toolCallsSuccess": 54,
+      "toolCallsFailure": 2,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "languages": [
+        "javascript"
+      ],
+      "tools": [
+        {
+          "toolName": "Bash",
+          "totalCalls": 31,
+          "successCount": 29,
+          "failureCount": 2,
+          "successRate": 93.54838709677419
+        },
+        {
+          "toolName": "Read",
+          "totalCalls": 24,
+          "successCount": 24,
+          "failureCount": 0,
+          "successRate": 100
+        },
+        {
+          "toolName": "Write",
+          "totalCalls": 1,
+          "successCount": 1,
+          "failureCount": 0,
+          "successRate": 100
+        }
+      ],
+      "tokens": {
+        "input": 102,
+        "output": 67766,
+        "cacheRead": 5824880,
+        "cacheCreation": 173729,
+        "cacheCreation1h": 173729,
+        "total": 6066477
+      },
+      "costUSD": 4.282471060000001,
+      "cacheReadCostUSD": 1.2810486600000002,
+      "perModelCost": [
+        {
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "input": 4,
+            "output": 410,
+            "cacheRead": 21247,
+            "cacheCreation": 22340,
+            "cacheCreation1h": 22340,
+            "total": 44001
+          },
+          "costUSD": 0.1911854,
+          "unpriced": false
+        },
+        {
+          "model": "claude-opus-5-5",
+          "tokens": {
+            "input": 98,
+            "output": 67356,
+            "cacheRead": 5803633,
+            "cacheCreation": 151389,
+            "cacheCreation1h": 151389,
+            "total": 6022476
+          },
+          "costUSD": 4.0912856600000005,
+          "unpriced": false
+        }
+      ],
+      "hadLog": true,
+      "agentSessionFile": "/Users/vishaltailor/.claude/projects/-Users-vishaltailor-Desktop-Projects-wedding-web/76d987b8-1fbd-4169-b7c4-3c0b39e7033c.jsonl",
+      "costSeries": [
+        {
+          "t": 1793864702262,
+          "cost": 0.173484,
+          "tokens": 21424
+        },
+        {
+          "t": 1793864709408,
+          "cost": 0.1911854,
+          "tokens": 44001
+        },
+        {
+          "t": 1793864713987,
+          "cost": 0.5602706000000001,
+          "tokens": 107419
+        },
+        {
+          "t": 1793864869638,
+          "cost": 1.0629763200000002,
+          "tokens": 274474
+        },
+        {
+          "t": 1793864969144,
+          "cost": 1.2015008600000001,
+          "tokens": 364081
+        },
+        {
+          "t": 1793865032929,
+          "cost": 1.41457548,
+          "tokens": 460464
+        },
+        {
+          "t": 1793865096858,
+          "cost": 1.5203541200000001,
+          "tokens": 558183
+        },
+        {
+          "t": 1793865115694,
+          "cost": 1.5890775000000001,
+          "tokens": 754929
+        },
+        {
+          "t": 1793865122554,
+          "cost": 1.6188531800000001,
+          "tokens": 853830
+        },
+        {
+          "t": 1793865132218,
+          "cost": 1.6555005600000001,
+          "tokens": 953399
+        },
+        {
+          "t": 1793865138346,
+          "cost": 1.6896111200000001,
+          "tokens": 1053494
+        },
+        {
+          "t": 1793865187031,
+          "cost": 1.8260848200000002,
+          "tokens": 1263045
+        },
+        {
+          "t": 1793865201687,
+          "cost": 1.8960353600000002,
+          "tokens": 1375185
+        },
+        {
+          "t": 1793865232258,
+          "cost": 1.9358448000000001,
+          "tokens": 1487690
+        },
+        {
+          "t": 1793865242562,
+          "cost": 2.03273368,
+          "tokens": 1607411
+        },
+        {
+          "t": 1793865271965,
+          "cost": 2.06602408,
+          "tokens": 1727265
+        },
+        {
+          "t": 1793865296813,
+          "cost": 2.16779828,
+          "tokens": 1972137
+        },
+        {
+          "t": 1793865734234,
+          "cost": 2.20864304,
+          "tokens": 2096056
+        },
+        {
+          "t": 1793865739139,
+          "cost": 2.2447259,
+          "tokens": 2220359
+        },
+        {
+          "t": 1793865773690,
+          "cost": 2.3251310600000004,
+          "tokens": 2347656
+        },
+        {
+          "t": 1793865824171,
+          "cost": 2.5614709000000007,
+          "tokens": 2614873
+        },
+        {
+          "t": 1793865844310,
+          "cost": 2.6016286000000006,
+          "tokens": 2749130
+        },
+        {
+          "t": 1793865860877,
+          "cost": 2.6733224200000008,
+          "tokens": 2886048
+        },
+        {
+          "t": 1793865873709,
+          "cost": 2.721228960000001,
+          "tokens": 3023466
+        },
+        {
+          "t": 1793865907185,
+          "cost": 2.840525060000001,
+          "tokens": 3301873
+        },
+        {
+          "t": 1793865920694,
+          "cost": 2.888538960000001,
+          "tokens": 3442140
+        },
+        {
+          "t": 1793865937823,
+          "cost": 2.9484654200000007,
+          "tokens": 3583668
+        },
+        {
+          "t": 1793865948553,
+          "cost": 2.9993210600000006,
+          "tokens": 3725974
+        },
+        {
+          "t": 1793865979167,
+          "cost": 3.0475580400000006,
+          "tokens": 3869019
+        },
+        {
+          "t": 1793866009985,
+          "cost": 3.1569134400000007,
+          "tokens": 4157462
+        },
+        {
+          "t": 1793866022693,
+          "cost": 3.217318840000001,
+          "tokens": 4303531
+        },
+        {
+          "t": 1793866054134,
+          "cost": 3.2599533000000007,
+          "tokens": 4449892
+        },
+        {
+          "t": 1793866081289,
+          "cost": 3.3447670400000007,
+          "tokens": 4599097
+        },
+        {
+          "t": 1793866102833,
+          "cost": 3.4438563600000007,
+          "tokens": 4898863
+        },
+        {
+          "t": 1793866122731,
+          "cost": 3.4939728000000008,
+          "tokens": 5049911
+        },
+        {
+          "t": 1793866175757,
+          "cost": 3.579982680000001,
+          "tokens": 5203194
+        },
+        {
+          "t": 1793866254390,
+          "cost": 3.879714420000001,
+          "tokens": 5371927
+        },
+        {
+          "t": 1793866306793,
+          "cost": 4.1395696200000005,
+          "tokens": 5716182
+        },
+        {
+          "t": 1793866328418,
+          "cost": 4.218789640000001,
+          "tokens": 5890919
+        },
+        {
+          "t": 1793866353218,
+          "cost": 4.282471060000001,
+          "tokens": 6066477
+        }
+      ],
+      "dispatches": [
+        {
+          "kind": "command",
+          "name": "model",
+          "start": 1793864043155,
+          "durationMs": 0,
+          "id": "command:a0fc447e-60b6-4f74-9fe1-16a89c82ad1a:0",
+          "ownerAgentId": "1bbf9043-ee6e-4f6f-878f-c435ee99fa0f",
+          "relationshipStatus": "root",
+          "elapsedMs": 0,
+          "status": "completed",
+          "attributionStatus": "unavailable",
+          "attributionScope": "owner-window"
+        }
+      ],
+      "costSource": "native-estimate",
+      "costBasis": "standard-api-tokens",
+      "dispatchesComplete": true,
+      "rootOwnCostUSD": 3.9105360000000005,
+      "unlinkedCostUSD": 0,
+      "unlinkedAgentIds": [],
+      "observedEnd": 1793866495776,
+      "rootOwnTokens": {
+        "input": 102,
+        "output": 67766,
+        "cacheRead": 5824880,
+        "cacheCreation": 173729,
+        "cacheCreation1h": 173729,
+        "total": 6066477
+      },
+      "unlinkedTokens": {
+        "input": 0,
+        "output": 0,
+        "cacheRead": 0,
+        "cacheCreation": 0,
+        "cacheCreation1h": 0,
+        "total": 0
+      },
+      "modelTimeline": [
+        {
+          "t": 1793864702262,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.173484,
+          "tokens": 21424
+        },
+        {
+          "t": 1793864709408,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.0177014,
+          "tokens": 22577
+        },
+        {
+          "t": 1793864713987,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.3690852,
+          "tokens": 63418
+        },
+        {
+          "t": 1793864865017,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.35851904,
+          "tokens": 82911
+        },
+        {
+          "t": 1793864869638,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.14418668,
+          "tokens": 84144
+        },
+        {
+          "t": 1793864969144,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.13852454,
+          "tokens": 89607
+        },
+        {
+          "t": 1793865032929,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.21307462,
+          "tokens": 96383
+        },
+        {
+          "t": 1793865096858,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.10577864,
+          "tokens": 97719
+        },
+        {
+          "t": 1793865106332,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.03691644,
+          "tokens": 98113
+        },
+        {
+          "t": 1793865115694,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.03180694,
+          "tokens": 98633
+        },
+        {
+          "t": 1793865122554,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.02977568,
+          "tokens": 98901
+        },
+        {
+          "t": 1793865132218,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.03664738,
+          "tokens": 99569
+        },
+        {
+          "t": 1793865138346,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.03411056,
+          "tokens": 100095
+        },
+        {
+          "t": 1793865169011,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.0284702,
+          "tokens": 100344
+        },
+        {
+          "t": 1793865187031,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.1080035,
+          "tokens": 109207
+        },
+        {
+          "t": 1793865201687,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.06995054,
+          "tokens": 112140
+        },
+        {
+          "t": 1793865232258,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.03980944,
+          "tokens": 112505
+        },
+        {
+          "t": 1793865242562,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.09688888,
+          "tokens": 119721
+        },
+        {
+          "t": 1793865271965,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.0332904,
+          "tokens": 119854
+        },
+        {
+          "t": 1793865277782,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.04805922,
+          "tokens": 121852
+        },
+        {
+          "t": 1793865296813,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.05371498,
+          "tokens": 123020
+        },
+        {
+          "t": 1793865734234,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.04084476,
+          "tokens": 123919
+        },
+        {
+          "t": 1793865739139,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.03608286,
+          "tokens": 124303
+        },
+        {
+          "t": 1793865773690,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.08040516,
+          "tokens": 127297
+        },
+        {
+          "t": 1793865810852,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.15323264,
+          "tokens": 133206
+        },
+        {
+          "t": 1793865824171,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.0831072,
+          "tokens": 134011
+        },
+        {
+          "t": 1793865844310,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.0401577,
+          "tokens": 134257
+        },
+        {
+          "t": 1793865860877,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.07169382,
+          "tokens": 136918
+        },
+        {
+          "t": 1793865873709,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.04790654,
+          "tokens": 137418
+        },
+        {
+          "t": 1793865885370,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.052976,
+          "tokens": 138510
+        },
+        {
+          "t": 1793865907185,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.0663201,
+          "tokens": 139897
+        },
+        {
+          "t": 1793865920694,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.0480139,
+          "tokens": 140267
+        },
+        {
+          "t": 1793865937823,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.05992646,
+          "tokens": 141528
+        },
+        {
+          "t": 1793865948553,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.05085564,
+          "tokens": 142306
+        },
+        {
+          "t": 1793865979167,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.04823698,
+          "tokens": 143045
+        },
+        {
+          "t": 1793865991474,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.04003274,
+          "tokens": 143202
+        },
+        {
+          "t": 1793866009985,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.06932266,
+          "tokens": 145241
+        },
+        {
+          "t": 1793866022693,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.0604054,
+          "tokens": 146069
+        },
+        {
+          "t": 1793866054134,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.04263446,
+          "tokens": 146361
+        },
+        {
+          "t": 1793866081289,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.08481374,
+          "tokens": 149205
+        },
+        {
+          "t": 1793866095158,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.05316938,
+          "tokens": 149406
+        },
+        {
+          "t": 1793866102833,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.04591994,
+          "tokens": 150360
+        },
+        {
+          "t": 1793866122731,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.05011644,
+          "tokens": 151048
+        },
+        {
+          "t": 1793866175757,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.08600988,
+          "tokens": 153283
+        },
+        {
+          "t": 1793866254390,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.29973174,
+          "tokens": 168733
+        },
+        {
+          "t": 1793866281635,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.15407788,
+          "tokens": 170756
+        },
+        {
+          "t": 1793866306793,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.10577732,
+          "tokens": 173499
+        },
+        {
+          "t": 1793866328418,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.07922002,
+          "tokens": 174737
+        },
+        {
+          "t": 1793866353218,
+          "model": "claude-opus-5-5",
+          "costUSD": 0.06368142,
+          "tokens": 175558
+        }
+      ],
+      "routedTurnsPct": 0,
+      "skillInvocations": [],
+      "agentInvocations": [],
+      "commandInvocations": [
+        {
+          "name": "model",
+          "totalCalls": 1,
+          "successCount": 1,
+          "failureCount": 0
+        }
+      ],
+      "sessionSource": "Pure chat"
+    }
+  ]
+}

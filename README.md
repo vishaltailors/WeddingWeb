@@ -374,6 +374,14 @@ message, couple, venue and complete side-specific schedule. Image URLs contain a
 content version so guest or event edits produce a new URL. The image schedule is
 in English; metadata respects `lang=gu` and `language=gu`.
 
+Preview rendering uses the licensed Noto fonts bundled in `scripts/fonts`,
+including Gujarati and Devanagari guest text. `scripts/social-fonts.mjs`
+uses Fontkit to shape script runs and converts every letter to an SVG path
+before Sharp renders the image. Vercel does not need system fonts or Fontconfig.
+Keep the font files and their licenses included in both functions
+in `vercel.json`. Font changes also update personal image URLs. Redeploy after
+changing fonts; messaging platforms may retain older cached page previews.
+
 Invalid, inactive, deleted or wrong-side invitations, and resolver outages, fall
 back to the standard side preview. Both endpoints use `private, no-store` and
 `noindex` headers. Anyone possessing the personal link can see its guest details,

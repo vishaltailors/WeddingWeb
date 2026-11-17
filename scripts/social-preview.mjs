@@ -3,7 +3,7 @@ import { createTranslator, normalizeLanguage } from "../src/i18n.js";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import sharp from "sharp";
+import { outlineSocialText, socialFonts, socialFontVersion } from "./social-fonts.mjs";
 
 const width = 1200;
 const height = 630;
@@ -120,8 +120,9 @@ export function renderPersonalCardSvg(side, invitation) {
     3,
   );
   const text = (x, y, value, size, color = "#49372e", family = "sans-serif") =>
-    `<text x="${x}" y="${y}" font-family="${family}" font-size="${size}" fill="${color}">${escapeHtml(value)}</text>`;
+    `<text x="${x}" y="${y}" font-family="${family === "serif" ? socialFonts.serif : socialFonts.sans}" font-size="${size}" fill="${color}">${escapeHtml(value)}</text>`;
   return `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <!-- Bundled fonts: ${socialFontVersion} -->
     <rect width="1200" height="630" fill="#fbf8f1"/>
     <rect x="24" y="24" width="1152" height="582" rx="8" fill="none" stroke="#b7965c"/>
     <path d="M590 65V565" stroke="#b7965c" stroke-opacity=".5"/>
@@ -144,8 +145,9 @@ export function renderPersonalCardSvg(side, invitation) {
 }
 
 export async function renderCard(side, invitation) {
+  const { default: sharp } = await import("sharp");
   if (invitation) {
-    return sharp(Buffer.from(renderPersonalCardSvg(side, invitation)))
+    return sharp(Buffer.from(outlineSocialText(renderPersonalCardSvg(side, invitation))))
       .jpeg({ quality: 90 }).toBuffer();
   }
   const wedding = getWedding(side);
@@ -155,21 +157,21 @@ export async function renderCard(side, invitation) {
       <circle r="182" stroke-opacity=".35"/>
       <circle r="162" stroke-opacity=".55"/>
       <path d="M0 96C-75 15-50-65 0-115C50-65 75 15 0 96ZM0 96C-120 90-145 5-127-58C-43-45 5 30 0 96ZM0 96C120 90 145 5 127-58C43-45-5 30 0 96ZM0 96C-120 144-180 63-178 15C-95-9-25 35 0 96ZM0 96C120 144 180 63 178 15C95-9 25 35 0 96ZM-78 126H78"/>
-      <text y="231" text-anchor="middle" font-family="serif" font-size="26" font-style="italic" fill="#967442" stroke="none">Seven steps. One forever.</text>
+      <text y="231" text-anchor="middle" font-family="${socialFonts.serif}" font-size="26" font-style="italic" fill="#967442" stroke="none">Seven steps. One forever.</text>
     </g>
     <rect x="24" y="24" width="1152" height="582" rx="8" fill="none" stroke="#b7965c" stroke-opacity=".65"/>
-    <g text-anchor="middle">
-      <text x="366" y="119" font-family="sans-serif" font-size="17" letter-spacing="5" fill="#967442">A BEAUTIFUL BEGINNING</text>
+    <g>
+      <text x="366" y="119" text-anchor="middle" font-family="${socialFonts.sans}" font-size="17" letter-spacing="5" fill="#967442">A BEAUTIFUL BEGINNING</text>
       <path d="M276 153H456" stroke="#b7965c"/>
-      <text x="366" y="253" font-family="serif" font-size="82" fill="#49372e">${escapeHtml(wedding.firstName)}</text>
-      <text x="366" y="302" font-family="serif" font-size="25" font-style="italic" fill="#967442">weds</text>
-      <text x="366" y="393" font-family="serif" font-size="82" fill="#49372e">${escapeHtml(wedding.secondName)}</text>
+      <text x="366" y="253" text-anchor="middle" font-family="${socialFonts.serif}" font-size="82" fill="#49372e">${escapeHtml(wedding.firstName)}</text>
+      <text x="366" y="302" text-anchor="middle" font-family="${socialFonts.serif}" font-size="25" font-style="italic" fill="#967442">weds</text>
+      <text x="366" y="393" text-anchor="middle" font-family="${socialFonts.serif}" font-size="82" fill="#49372e">${escapeHtml(wedding.secondName)}</text>
       <path d="M276 433H456" stroke="#b7965c"/>
-      <text x="366" y="484" font-family="sans-serif" font-size="22" fill="#49372e">${escapeHtml(wedding.dateLabel)}</text>
-      <text x="366" y="523" font-family="sans-serif" font-size="17" fill="#77675b">${escapeHtml(wedding.venue)} - ${escapeHtml(wedding.city)}</text>
+      <text x="366" y="484" text-anchor="middle" font-family="${socialFonts.sans}" font-size="22" fill="#49372e">${escapeHtml(wedding.dateLabel)}</text>
+      <text x="366" y="523" text-anchor="middle" font-family="${socialFonts.sans}" font-size="17" fill="#77675b">${escapeHtml(wedding.venue)} - ${escapeHtml(wedding.city)}</text>
     </g>
   </svg>`;
-  return sharp(Buffer.from(overlay)).jpeg({ quality: 90 }).toBuffer();
+  return sharp(Buffer.from(outlineSocialText(overlay))).jpeg({ quality: 90 }).toBuffer();
 }
 
 export function socialPreviewPlugin(env = process.env) {

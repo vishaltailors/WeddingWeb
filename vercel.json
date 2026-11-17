@@ -5,7 +5,10 @@
   "outputDirectory": "dist",
   "functions": {
     "api/invitation.mjs": {
-      "includeFiles": "dist/*.html"
+      "includeFiles": "{dist/*.html,scripts/fonts/**}"
+    },
+    "api/invitation-image.mjs": {
+      "includeFiles": "scripts/fonts/**"
     }
   },
   "routes": [
