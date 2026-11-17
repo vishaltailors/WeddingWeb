@@ -152,6 +152,8 @@ export const gu = {
   "Join us as Krishi weds Vishal and we take our pheras, surrounded by the people who mean the most.":
     "અમારા પ્રિયજનોની હાજરીમાં કૃષિ અને વિશાલ સાત ફેરા લઈને જીવનભરના સાથની શરૂઆત કરે, એ શુભ પ્રસંગે પધારો.",
   "Dress in shades of yellow": "પીળા રંગનાં કપડાં પહેરીને આવજો",
+  "For men Yellow, for women Rani Pink":
+    "પુરુષો માટે પીળો, મહિલાઓ માટે રાણી પિંક",
   "Dress in shades of purple": "જાંબલી રંગનાં કપડાં પહેરીને આવજો",
   "Traditional Indian attire": "પરંપરાગત ભારતીય પોશાકમાં પધારજો",
   "Bring your festive best": "ઉત્સવને શોભે એવા સરસ કપડાં પહેરીને આવજો",

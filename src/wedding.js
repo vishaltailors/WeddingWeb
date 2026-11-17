@@ -31,7 +31,7 @@ export const weddingSides = {
         icon: "sun",
         description:
           "Let’s celebrate Vishal with golden hues, happy hearts, and a beautiful mess of turmeric.",
-        dress: "Dress in shades of yellow",
+        dress: "For men Yellow, for women Rani Pink",
         tone: "yellow",
       },
       {
