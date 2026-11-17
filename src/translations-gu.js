@@ -137,8 +137,8 @@ export const gu = {
     "સોનેરી રંગો, ખુશીઓ અને હળદરના રંગે વિશાલની પીઠીની ઉજવણી કરીએ.",
   "Let’s celebrate Krishi with golden hues, happy hearts, and a beautiful mess of turmeric.":
     "સોનેરી રંગો, ખુશીઓ અને હળદરના રંગે કૃષિની પીઠીની ઉજવણી કરીએ.",
-  "Join Vishal's family for sacred prayers as we seek peace, harmony, and blessings for the journey ahead.":
-    "આગળની સફર માટે શાંતિ, સુમેળ અને આશીર્વાદ મેળવવા વિશાલના પરિવાર સાથે મંગલ પ્રાર્થનાઓમાં સહભાગી થાઓ.",
+  "Join Vishal's family for sacred prayers as we seek peace, harmony, and blessings for the journey ahead. Lunch/banquet will be served at 12:30 PM.":
+    "આગળની સફર માટે શાંતિ, સુમેળ અને આશીર્વાદ મેળવવા વિશાલના પરિવાર સાથે મંગલ પ્રાર્થનાઓમાં સહભાગી થાઓ. ભોજન સમારંભ બપોરે ૧૨:૩૦ વાગ્યે રાખેલ છે.",
   "Join Krishi's family for sacred prayers as we seek peace, harmony, and blessings for the journey ahead.":
     "આગળની સફર માટે શાંતિ, સુમેળ અને આશીર્વાદ મેળવવા કૃષિના પરિવાર સાથે મંગલ પ્રાર્થનાઓમાં સહભાગી થાઓ.",
   "Join Vishal’s family as we exchange rings, then dance the night away to our favourite melodies.":

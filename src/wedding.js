@@ -41,7 +41,7 @@ export const weddingSides = {
         time: "9:30 AM",
         icon: "flower",
         description:
-          "Join Vishal's family for sacred prayers as we seek peace, harmony, and blessings for the journey ahead.",
+          "Join Vishal's family for sacred prayers as we seek peace, harmony, and blessings for the journey ahead. Lunch/banquet will be served at 12:30 PM.",
         dress: "Traditional Indian attire",
         tone: "rose",
       },
