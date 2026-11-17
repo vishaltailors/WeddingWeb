@@ -2,6 +2,7 @@ import Ganesha from "./ganesha";
 import { formatDigits, useLanguage } from "./i18n";
 import {
   motion,
+  useIsPresent,
   useMotionTemplate,
   useReducedMotion,
   useSpring,
@@ -374,6 +375,7 @@ export default function InvitationCover({
 }) {
   const { t } = useLanguage();
   const [opening, setOpening] = useState(false);
+  const isPresent = useIsPresent();
   const reduceMotion = useReducedMotion();
   const tiltX = useSpring(0, { stiffness: 90, damping: 20 });
   const tiltY = useSpring(0, { stiffness: 90, damping: 20 });
@@ -400,10 +402,14 @@ export default function InvitationCover({
   // The page underneath must not scroll while the card is closed.
   useEffect(() => {
     const root = document.documentElement;
+    const body = document.body;
     const previous = root.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
     root.style.overflow = "hidden";
+    body.style.overflow = "hidden";
     return () => {
       root.style.overflow = previous;
+      body.style.overflow = previousBodyOverflow;
     };
   }, []);
 
@@ -414,7 +420,11 @@ export default function InvitationCover({
   }
 
   function open() {
-    if (opening) return;
+    if (opening || !isPresent) return;
+    if (reduceMotion) {
+      onOpen();
+      return;
+    }
     tiltX.set(0);
     tiltY.set(0);
     setOpening(true);
@@ -424,6 +434,7 @@ export default function InvitationCover({
     <MotionDiv
       className="cover"
       data-opening={opening || undefined}
+      data-leaving={!isPresent || undefined}
       role="dialog"
       aria-modal="true"
       aria-labelledby="cover-title"
@@ -433,7 +444,7 @@ export default function InvitationCover({
         tiltY.set(0);
       }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.9, ease: "easeInOut" }}
+      transition={{ duration: reduceMotion ? 0.2 : 0.65, ease: "easeInOut" }}
     >
       <div className="cover-backdrop" aria-hidden="true">
         <span className="cover-orb one" />
@@ -483,12 +494,6 @@ export default function InvitationCover({
         className="cover-stage"
         initial={{ opacity: 0, y: 48, rotateX: 16 }}
         animate={{ opacity: 1, y: 0, rotateX: 0 }}
-        exit={{
-          opacity: 0,
-          scale: 1.03,
-          filter: "blur(6px)",
-          transition: { duration: 0.9, ease: "easeInOut" },
-        }}
         transition={{ duration: 1.5, delay: 0.15, ease }}
       >
         <MotionDiv
@@ -536,7 +541,7 @@ export default function InvitationCover({
               couple: wedding.coupleNames,
             })}
             onClick={open}
-            disabled={opening}
+            disabled={opening || !isPresent}
             transition={
               opening
                 ? { duration: 1, ease }

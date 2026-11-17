@@ -2033,7 +2033,8 @@ button {
 
 /* ── Kankotri cover ─────────────────────────────────────────────── */
 .cover {
-  --card-w: min(400px, 84vw, 52dvh);
+  --card-w: min(400px, 84vw, 52vh);
+  --card-w: min(400px, 84vw, 52svh);
   --arch: calc(var(--card-w) / 2);
   --cover-gold: #e6c78c;
   --cover-ivory: #fbf1de;
@@ -2047,6 +2048,9 @@ button {
   justify-content: safe center;
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  isolation: isolate;
+  will-change: opacity;
   padding: 64px 0 32px;
   color: var(--cover-ivory);
   background:
@@ -2054,6 +2058,11 @@ button {
     radial-gradient(ellipse at 50% 50%, #3d1219 0%, #1d080c 70%, #120507 100%);
   -webkit-user-select: none;
   user-select: none;
+}
+/* Keep the fade on one layer without repainting decorative animations. */
+.cover[data-opening] *,
+.cover[data-leaving] * {
+  animation-play-state: paused;
 }
 .cover-backdrop,
 .cover-backdrop > span,
@@ -2528,6 +2537,24 @@ button {
   }
 }
 @media (max-width: 760px) {
+  .cover-orb {
+    filter: none;
+    mix-blend-mode: normal;
+  }
+  .cover-card,
+  .cover[data-opening] .cover-card {
+    animation: none;
+    transition: none;
+    box-shadow:
+      0 24px 48px -16px #000000b3,
+      0 0 0 1px #e6c78c26,
+      0 0 60px -10px #e3ad5e40;
+  }
+  .cover-wax,
+  .cover[data-opening] .cover-wax {
+    filter: drop-shadow(0 1.2cqw 1.4cqw #000000a6);
+    transition: none;
+  }
   .cover-kicker {
     font-size: 8px;
     letter-spacing: 2.6px;

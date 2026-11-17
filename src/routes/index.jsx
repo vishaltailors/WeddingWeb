@@ -178,6 +178,12 @@ function Index() {
   // The cover only greets a guest whose name resolved from the database;
   // visitors without one land straight on the invitation.
   const showCover = coverOpen && Boolean(invite) && invitation !== null;
+  const [coverPresent, setCoverPresent] = useState(Boolean(invite));
+  const coverBlocking = showCover || coverPresent;
+
+  useEffect(() => {
+    if (showCover) setCoverPresent(true);
+  }, [showCover]);
   const dateParts = new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "2-digit",
@@ -278,7 +284,7 @@ function Index() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <AnimatePresence>
+      <AnimatePresence onExitComplete={() => setCoverPresent(false)}>
         {showCover && (
           <InvitationCover
             wedding={wedding}
@@ -288,10 +294,10 @@ function Index() {
           />
         )}
       </AnimatePresence>
-      <a className="skip-link" href="#main" inert={showCover}>
+      <a className="skip-link" href="#main" inert={coverBlocking}>
         {t("Skip to invitation")}
       </a>
-      <header className="site-header" inert={showCover}>
+      <header className="site-header" inert={coverBlocking}>
         <a
           className="monogram"
           href="#home"
@@ -356,7 +362,7 @@ function Index() {
         </AnimatePresence>
       </header>
 
-      <main id="main" inert={showCover}>
+      <main id="main" inert={coverBlocking}>
         <section className="hero" id="home">
           <div className="hero-art" aria-hidden="true">
             <img
@@ -370,8 +376,8 @@ function Index() {
           </div>
           <MotionDiv
             className="hero-content"
-            initial={{ opacity: 0, y: 20 }}
-            animate={showCover ? undefined : { opacity: 1, y: 0 }}
+            initial={showCover ? false : { opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, delay: 0.45 }}
           >
             <div className="hero-blessing">
@@ -683,7 +689,7 @@ function Index() {
           </MotionDiv>
         </section>
       </main>
-      <footer className="site-footer" inert={showCover}>
+      <footer className="site-footer" inert={coverBlocking}>
         <a className="monogram" href="#home" aria-label={t("Back to top")}>
           {wedding.firstInitial}
           <span>&</span>
@@ -695,7 +701,7 @@ function Index() {
           {wedding.dateLabel.toUpperCase()} <Heart size={12} />
         </span>
       </footer>
-      <div inert={showCover}>
+      <div inert={coverBlocking}>
         <MusicPlayer />
       </div>
     </MotionConfig>
