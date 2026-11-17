@@ -18,9 +18,13 @@ export const weddingSides = {
     ...sharedWedding,
     firstName: "Vishal",
     secondName: "Krishi",
+    homeVenue: "At Vishal's home",
+    homeAddress:
+      "5, Harihar Park, App. Asopalav Apartment, Causeway Road, Tadwadi, Surat",
     events: [
       {
         name: "Haldi",
+        atHome: true,
         subtitle: "A little sunshine, a lot of love",
         date: "10 December",
         time: "4:00 PM",
@@ -80,9 +84,12 @@ export const weddingSides = {
     ...sharedWedding,
     firstName: "Krishi",
     secondName: "Vishal",
+    homeVenue: "At Krishi's home",
+    homeAddress: "24, Bhagyalaxmi Row House, Jahangirpura, Surat, Gujarat",
     events: [
       {
         name: "Haldi",
+        atHome: true,
         subtitle: "A little sunshine, a lot of love",
         date: "10 December",
         time: "2:00 PM",
@@ -149,10 +156,16 @@ export function getWedding(side, language = "en") {
         "area",
         "city",
         "region",
+        "homeVenue",
+        "homeAddress",
       ].map((key) => [key, t(source[key])]),
     ),
     events: source.events.map((event) => ({
       ...event,
+      ...(event.atHome && {
+        venue: t(source.homeVenue),
+        address: t(source.homeAddress),
+      }),
       ...Object.fromEntries(
         ["name", "subtitle", "date", "time", "description", "dress"].map(
           (key) => [key, t(event[key])],

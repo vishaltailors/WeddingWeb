@@ -251,6 +251,29 @@ button {
 .theme-option > svg:last-child {
   margin-left: auto;
 }
+.download-trigger-label {
+  display: none;
+}
+.mobile-nav-download {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.mobile-nav-download .download-trigger {
+  justify-content: flex-start;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 4px;
+  font-size: 12px;
+}
+.mobile-nav-download .download-trigger-label {
+  display: inline;
+}
+.mobile-nav-download .theme-options {
+  position: static;
+  width: 100%;
+  margin-top: 2px;
+}
 .menu-button,
 .mobile-nav {
   display: none;
@@ -720,6 +743,30 @@ button {
 .event-date svg {
   color: var(--gold);
 }
+.event-location {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  max-width: 240px;
+  margin: 16px auto;
+  font-size: 11px;
+  line-height: 1.8;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.event-location svg {
+  flex-shrink: 0;
+  color: var(--gold);
+}
+.event-location strong {
+  color: var(--wine);
+  font-weight: 500;
+}
+.event-location p {
+  margin-top: 3px;
+  color: var(--muted);
+}
 .event-description {
   font-size: 11px;
   line-height: 1.9;
@@ -1121,6 +1168,9 @@ button {
   .header-actions {
     margin-left: auto;
     gap: 8px;
+  }
+  .header-actions .download-menu {
+    display: none;
   }
   .menu-button {
     display: grid;

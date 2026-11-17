@@ -337,7 +337,7 @@ vercel
 # Output directory: dist
 ```
 
-**Netlify / Cloudflare Pages / GitHub Pages / S3 + CloudFront / etc.** use the same build command and output directory. No server or serverless functions required.
+**Netlify / Cloudflare Pages / GitHub Pages / S3 + CloudFront / etc.** use the same build command and output directory for the invitation itself. Personalised social previews require the Vercel functions below or an equivalent server implementation.
 
 ### Side-Specific Social Previews
 
@@ -359,6 +359,33 @@ a fresh scrape after deploying updated metadata.
 `bun run dev` and `bun run preview` also serve the appropriate metadata for each
 side. Other static hosts need an equivalent query-aware rewrite to serve the
 bride preview.
+
+### Personalised Social Previews
+
+Links containing `invite` are routed to `api/invitation.mjs` before the static
+side routes. The function resolves the active invitation using the existing
+anonymous, token-and-side-scoped Supabase RPC, then returns the built React HTML
+with personalised Open Graph and Twitter tags before JavaScript runs. The title
+contains the guest name; the description contains their message, the selected
+side's event names, dates and times, and the wedding venue.
+
+`api/invitation-image.mjs` generates a 1200 x 630 JPEG with the guest name,
+message, couple, venue and complete side-specific schedule. Image URLs contain a
+content version so guest or event edits produce a new URL. The image schedule is
+in English; metadata respects `lang=gu` and `language=gu`.
+
+Invalid, inactive, deleted or wrong-side invitations, and resolver outages, fall
+back to the standard side preview. Both endpoints use `private, no-store` and
+`noindex` headers. Anyone possessing the personal link can see its guest details,
+including the social platform that fetches the preview. Platforms can cache
+previously fetched previews independently; revoking a link cannot remove copies
+already cached by a messaging service.
+
+The functions use the same `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
+environment variables as the app (or server-only `SUPABASE_URL` and
+`SUPABASE_ANON_KEY`). No service-role key is needed. `vercel.json` includes the
+built HTML in the page function. Redeploy to enable the new personal-link route.
+Both `bun run dev` and `bun run preview` run the same preview handlers locally.
 
 ### Environment Variables
 

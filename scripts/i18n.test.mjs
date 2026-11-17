@@ -58,6 +58,8 @@ test("both wedding sides are fully translated without changing schedules or URLs
       "area",
       "city",
       "region",
+      "homeVenue",
+      "homeAddress",
     ]) {
       assert.ok(
         gu[source[key]],
@@ -81,6 +83,15 @@ test("both wedding sides are fully translated without changing schedules or URLs
       }
       assert.equal(gujarati.events[index].icon, event.icon);
       assert.equal(gujarati.events[index].tone, event.tone);
+      if (event.atHome) {
+        assert.equal(event.name, "Haldi");
+        assert.equal(english.events[index].venue, source.homeVenue);
+        assert.equal(english.events[index].address, source.homeAddress);
+        assert.equal(gujarati.events[index].venue, gu[source.homeVenue]);
+        assert.equal(gujarati.events[index].address, gu[source.homeAddress]);
+      } else {
+        assert.equal(english.events[index].address, undefined);
+      }
     });
   }
 });
@@ -100,6 +111,8 @@ test("guest UI translation literals all have Gujarati entries", async () => {
   const paths = [
     "src/routes/index.jsx",
     "src/invitation-cover.jsx",
+    "src/invitation-download.jsx",
+    "src/invitation-card.js",
     "src/theme-menu.jsx",
     "src/music-player.jsx",
   ];

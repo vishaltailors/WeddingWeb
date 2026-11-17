@@ -42,11 +42,13 @@ test("production HTML references distinct, valid social cards and shared app ass
   assert.equal(pages[0].match(/src="([^"]+\.js)"/)[1], pages[1].match(/src="([^"]+\.js)"/)[1]);
   const config = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url)));
   assert.equal(config.rewrites, undefined);
-  assert.deepEqual(config.routes[0].has, [{ type: "query", key: "side", value: "bride" }]);
-  assert.equal(config.routes[0].dest, "/bride.html");
-  assert.equal(config.routes[1].dest, "/index.html");
+  assert.deepEqual(config.routes[0].has, [{ type: "query", key: "invite" }]);
+  assert.equal(config.routes[0].dest, "/api/invitation");
+  assert.deepEqual(config.routes[1].has, [{ type: "query", key: "side", value: "bride" }]);
+  assert.equal(config.routes[1].dest, "/bride.html");
   assert.equal(config.routes[2].dest, "/index.html");
-  assert.deepEqual(config.routes[3], { handle: "filesystem" });
+  assert.equal(config.routes[3].dest, "/index.html");
+  assert.deepEqual(config.routes[4], { handle: "filesystem" });
 });
 
 test("side routing runs before static-file lookup and leaves assets untouched", async () => {
@@ -56,12 +58,15 @@ test("side routing runs before static-file lookup and leaves assets untouched", 
     for (const route of config.routes) {
       if (route.handle === "filesystem") return url.pathname;
       if (!new RegExp(route.src).test(url.pathname)) continue;
-      if (route.has?.some(({ key, value }) => url.searchParams.get(key) !== value)) continue;
+      if (route.has?.some(({ key, value }) =>
+        value === undefined ? !url.searchParams.has(key) : url.searchParams.get(key) !== value)) continue;
       return route.dest;
     }
   };
   assert.equal(resolve("/?side=bride"), "/bride.html");
   assert.equal(resolve("/?preview=2&side=bride"), "/bride.html");
+  assert.equal(resolve("/?side=bride&invite=" + "a".repeat(64)), "/api/invitation");
+  assert.equal(resolve("/?invite=invalid"), "/api/invitation");
   assert.equal(resolve("/?side=groom"), "/index.html");
   assert.equal(resolve("/?side=invalid"), "/index.html");
   assert.equal(resolve("/"), "/index.html");

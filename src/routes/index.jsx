@@ -8,6 +8,7 @@ import nightImage from "../assets/images/wedding-night-view.jpg";
 import Ganesha from "../ganesha";
 import { formatDigits, normalizeLanguage, useLanguage } from "../i18n";
 import InvitationCover from "../invitation-cover";
+import InvitationDownload from "../invitation-download";
 import MusicPlayer from "../music-player";
 import { fetchInvitation, normalizeInviteToken } from "../supabase";
 import { applyTheme, getStoredTheme, storeTheme } from "../theme";
@@ -310,6 +311,7 @@ function Index() {
         </nav>
         <div className="header-actions">
           <ThemeMenu theme={theme} onChange={changeTheme} />
+          <InvitationDownload wedding={wedding} />
           <button
             className="calendar-button"
             onClick={() => saveDate(wedding, t)}
@@ -346,6 +348,9 @@ function Index() {
                   <ArrowUpRight size={17} />
                 </a>
               ))}
+              <div className="mobile-nav-download">
+                <InvitationDownload wedding={wedding} />
+              </div>
             </MotionNav>
           )}
         </AnimatePresence>
@@ -534,6 +539,15 @@ function Index() {
                     <Clock3 size={14} />
                     <span>{t("{{time}} onwards", { time: event.time })}</span>
                   </div>
+                  {event.atHome && (
+                    <div className="event-location">
+                      <MapPin size={14} aria-hidden="true" />
+                      <div>
+                        <strong>{event.venue}</strong>
+                        <p>{event.address}</p>
+                      </div>
+                    </div>
+                  )}
                   <p className="event-description">{event.description}</p>
                   <span className="dress-code">{event.dress}</span>
                 </MotionArticle>

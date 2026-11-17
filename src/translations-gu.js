@@ -166,6 +166,18 @@ export const gu = {
   "Open the invitation from {{couple}}": "{{couple}}નું આમંત્રણ ખોલો",
   "Tap the seal to open your invitation":
     "આમંત્રણ ખોલવા માટે મહોર પર સ્પર્શ કરો",
+  "Download invitation card": "આમંત્રણ પત્રિકા ડાઉનલોડ કરો",
+  "Invitation card language": "આમંત્રણ પત્રિકાની ભાષા",
+  English: "અંગ્રેજી",
+  Gujarati: "ગુજરાતી",
+  "THE CELEBRATIONS": "લગ્નના પ્રસંગો",
+  "Dress code": "પોશાક",
+  "At Vishal's home": "વિશાલના ઘરે",
+  "At Krishi's home": "ક્રિશીના ઘરે",
+  "123, Sample Society, Jahangirpura, Surat, Gujarat (placeholder address)":
+    "૧૨૩, સેમ્પલ સોસાયટી, જહાંગીરપુરા, સુરત, ગુજરાત (નમૂનાનું સરનામું)",
+  "456, Sample Society, Jahangirpura, Surat, Gujarat (placeholder address)":
+    "૪૫૬, સેમ્પલ સોસાયટી, જહાંગીરપુરા, સુરત, ગુજરાત (નમૂનાનું સરનામું)",
   Light: "આછો દેખાવ",
   Dark: "ઘેરો દેખાવ",
   "System default": "ફોનની સેટિંગ મુજબ",

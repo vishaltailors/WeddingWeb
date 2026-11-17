@@ -1,4 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import { normalizeInviteToken } from "./invitation-token.js";
+
+export { normalizeInviteToken } from "./invitation-token.js";
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -10,15 +13,6 @@ export const supabase = supabaseConfigured
       auth: { persistSession: true, autoRefreshToken: true },
     })
   : null;
-
-const tokenPattern = /^[0-9a-f]{64}$/;
-
-/** Accepts only a well-formed bearer token; every other value is ignored. */
-export function normalizeInviteToken(value) {
-  return typeof value === "string" && tokenPattern.test(value)
-    ? value
-    : undefined;
-}
 
 export function invitationLink(origin, side, token) {
   const link = new URL("/", origin);
