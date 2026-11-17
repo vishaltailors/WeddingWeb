@@ -49,7 +49,7 @@ export const weddingSides = {
         name: "Ring Ceremony & Sangeet",
         subtitle: "A promise forever, a night to remember",
         date: "11 December",
-        time: "7:00 PM",
+        time: "7:30 PM",
         icon: "music",
         description:
           "Join Vishal’s family as we exchange rings, then dance the night away to our favourite melodies.",
@@ -103,7 +103,7 @@ export const weddingSides = {
         name: "Ring Ceremony & Sangeet",
         subtitle: "A promise forever, a night to remember",
         date: "11 December",
-        time: "7:00 PM",
+        time: "7:30 PM",
         icon: "music",
         description:
           "Join Krishi’s family as we exchange rings, then dance the night away to our favourite melodies.",
