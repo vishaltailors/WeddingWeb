@@ -1,176 +1,252 @@
-# A Beautiful Beginning — Vishal &amp; Krishi's Wedding Invitation
+# A Beautiful Beginning: Vishal & Krishi's Wedding Website
 
-A production-quality, single-page wedding invitation website built with modern React tooling. Dual-sided (groom / bride) invitation with elegant typography, hand-crafted SVG illustrations, smooth motion, and accessible interactions.
+This project is a wedding invitation website. It includes the couple's story,
+ceremony details, directions, a countdown, music, calendar downloads, and
+downloadable invitation cards. There are groom and bride versions, English and
+Gujarati text, and light and dark themes.
 
----
+**You do not need coding experience to run the existing website.** Follow the
+setup steps below in order. Changing its design or wording involves editing
+files, but you can leave everything as it is.
 
-## ✨ Features
+## Find Your Next Step
 
-- **Dual invitation modes** — One codebase serves both the groom's and bride's side of the family via a URL query parameter. Title, event copy, signatures, and calendar downloads switch automatically.
-- **Personalised guest invitations** — An optional per-guest name and message, resolved from a private Supabase record behind an unguessable token, managed from a password-protected page at `/admin`.
-- **Live countdown timer** — Real-time days / hours / minutes / seconds counter to the main ceremony.
-- **Event timeline** — Haldi, Ring Ceremony &amp; Sangeet, Baraat, and Wedding cards with colour-coded tones, icons, dress codes, and precise scheduling.
-- **"Save the Date" calendar download** — Generates and downloads an `.ics` file compatible with Google Calendar, Apple Calendar, Outlook, etc.
-- **Native share + clipboard fallback** — Share the invitation URL via the Web Share API, or auto-copy when the API is unavailable.
-- **Light &amp; dark themes** — Separate hero and mandap illustrations for each colour scheme. CSS variables drive the full palette swap.
-- **Fully responsive** — Optimised layouts from 320 px mobile up through 1500 px+ widescreen desktop.
-- **Accessible** — Semantic HTML, ARIA labels, skip-to-content link, keyboard-friendly focus rings, mobile menu Escape-to-close, and `prefers-reduced-motion` support.
-- **Hand-crafted SVG art** — Custom Ganesha, lotus, flower, and horse-drawn carriage icons.
-- **Smooth motion** — Framer Motion (motion.js) scroll-reveal animations and navigation transitions.
+- [First-time setup](#first-time-setup): install the tools and open the website.
+- [Start it again later](#start-it-again-later): what to do after the first setup.
+- [Choose an invitation version](#choose-an-invitation-version): groom, bride, or Gujarati.
+- [Personalised guest invitations](#personalised-guest-invitations-optional): optional database and admin setup.
+- [Change the wedding details](#change-the-wedding-details): names, dates, text, and images.
+- [Publish the website](#publish-the-website): make it accessible to guests online.
+- [Troubleshooting](#troubleshooting): help with common problems.
+- [Technical reference](#technical-reference): commands and notes for developers.
 
----
+## Before You Begin
 
-## 🛠 Tech Stack
+You will need:
 
-### Animation and performance
+- A Mac, Windows, or Linux computer.
+- An internet connection to download the tools and project dependencies.
+- A browser such as Chrome, Safari, Firefox, or Edge.
+- The project folder, containing this README and a file called `package.json`.
 
-Content reveals once on entering the viewport, with individually paced story
-paragraphs and gentle image zoom-outs. Native CSS scroll timelines add subtle
-hero, seal, and floral parallax on fine-pointer desktop devices. Mobile devices
-and browsers without scroll-timeline support use the static composition.
+There are two ways to set up the website, plus an optional publishing step:
 
-Reduced-motion preferences disable entrances, zooming, parallax, and smooth
-scrolling. Animated properties are opacity and transforms, with no JavaScript
-scroll handlers or persistent animation loops. The countdown pauses in hidden
-tabs. Artwork uses compressed 480px/960px WebP sources, lazy loading below the
-hero, asynchronous decoding, and a single color-scheme-selected hero image.
+| What you want                                         | What you need                                                           |
+| ----------------------------------------------------- | ----------------------------------------------------------------------- |
+| Open the standard wedding invitation on your computer | Complete first-time setup only. No database or Supabase account needed. |
+| Create guest-specific links with names and messages   | Complete first-time setup, then the optional Supabase setup.            |
+| Send a working website link to other people           | Publish the website. A local link works only on your own computer.      |
 
-When replacing artwork, regenerate the `-480.webp` and `-960.webp` variants.
-Profile both invitation URLs on real mobile hardware, including reduced-motion
-mode, to validate frame times and layout stability. Frame rate depends on the
-device, browser, and display refresh rate.
+**A few words used in this guide:**
 
-| Layer        | Technology                                                                                                                   |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------- |
-| UI Library   | [React 19](https://react.dev/)                                                                                               |
-| Build Tool   | [Vite 6](https://vite.dev/) + [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) (SWC Fast Refresh) |
-| Routing      | [TanStack Router v1](https://tanstack.com/router) (file-based + auto code-splitting)                                         |
-| Styling      | [Tailwind CSS 4](https://tailwindcss.com/) via `@tailwindcss/vite` plugin                                                    |
-| Motion       | [motion.js](https://motion.dev/) (Framer Motion)                                                                             |
-| Icons        | [Lucide React](https://lucide.dev/) + custom SVGs                                                                            |
-| Linting      | [ESLint 9](https://eslint.org/) with `@eslint/js`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`                |
-| Formatting   | [Prettier 3](https://prettier.io/) + sort-imports &amp; Tailwind plugins                                                     |
-| Package Mgmt | [Bun](https://bun.sh/) (bun.lockb)                                                                                           |
+- **Terminal:** a window where you type instructions for your computer.
+- **Command:** one of those instructions. Paste it into the terminal and press Enter.
+- **Dependencies:** the supporting software this website needs.
+- **Local:** running on your computer, not published on the internet.
+- **Server:** the running program that lets your browser open the website.
+- **Deployment:** publishing the website online.
 
----
+Copy only the text inside a command box. Do not type the surrounding backticks,
+and run each command separately unless a step says otherwise.
 
-## 🚀 Quick Start
+## First-Time Setup
 
-### Prerequisites
+### Step 1: Install a File Editor
 
-- **Bun** 1.1+ (or npm/pnpm/yarn — lockfile is Bun-specific but any package manager works)
-- **Node.js** 20+
+Use [Visual Studio Code](https://code.visualstudio.com/) (VS Code), a free app
+for opening project folders and editing files. Download it for your operating
+system and follow its installation instructions.
 
-### Install
+If you already use an editor such as Trae, you can use that instead. The menu
+names below refer to VS Code.
+
+### Step 2: Install Node.js
+
+1. Open [nodejs.org](https://nodejs.org/).
+2. Choose the current **LTS** release. LTS means the stable, long-term-supported version.
+3. Follow the installation instructions for your computer. Keep the default options.
+4. Close and reopen your editor after installation so it can find the new software.
+
+Node.js is required because this project's build command uses it, even when
+you use Bun to install and start the project.
+
+### Step 3: Open the Project and Its Terminal
+
+If you already have the folder, do not download another copy.
+
+If you are getting it from GitHub, open the project's repository, select
+**Code > Download ZIP**, and extract the ZIP first. Work in the extracted
+folder, not inside the ZIP. Its name may be `wedding-web` or `wedding-web-main`.
+
+1. In VS Code, choose **File > Open Folder**.
+2. Select the project folder. On this Mac it is `/Users/vishaltailor/Desktop/Projects/wedding-web`.
+3. Check that `README.md`, `package.json`, and `src` appear in the file list.
+4. Choose **Terminal > New Terminal**. A terminal opens at the bottom of the editor.
+5. Check Node.js by running:
+
+```bash
+node --version
+```
+
+You should see a version number starting with `v`, not an error.
+
+The editor's terminal normally opens in the selected project folder. If a
+later command says it cannot find `package.json`, close that terminal, check
+that you opened the correct folder, and choose **Terminal > New Terminal** again.
+
+### Step 4: Install Bun
+
+Bun installs the dependencies and runs the project's commands. This guide uses
+Bun because the project includes a Bun lockfile, which records dependency versions.
+
+Open [Bun's installation guide](https://bun.sh/docs/installation). Use the
+instructions for your operating system. The standard installer commands are:
+
+**Mac or Linux terminal:**
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+**Windows PowerShell:**
+
+```powershell
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+
+These commands download and run Bun's official installer. Use them only from
+the official source; on a managed work computer, check with your IT team first.
+
+After installation, close and reopen the editor, open a new terminal, and run:
+
+```bash
+bun --version
+```
+
+You should see a version number. If you see "command not found" or "not
+recognized", follow the troubleshooting section before continuing.
+
+### Step 5: Install the Website's Dependencies
+
+In the project terminal, run:
 
 ```bash
 bun install
 ```
 
-### Development
+Wait until it finishes and the terminal is ready for another command. It
+downloads dependencies into a folder called `node_modules`. The first install
+may take a few minutes, depending on your connection.
 
-Start the Vite dev server with HMR:
+You usually do this once, and again when the project's dependencies change.
+
+### Step 6: Start the Website
+
+Run:
 
 ```bash
 bun run dev
 ```
 
-Then open the URLs shown in your terminal — typically http://localhost:5173.
+The terminal should show a **Local** address, usually:
 
-### Build for Production
-
-```bash
-bun run build
+```text
+http://localhost:5173/
 ```
 
-Output is emitted to the `dist/` directory, ready for static deployment.
+Open the exact address shown in your browser. If another program already uses
+that port, the address might be `http://localhost:5174/` or another number.
 
-### Preview Production Build
+**Keep the terminal open.** While the server is running, the terminal is busy;
+this is normal. The website stops when you stop that command or close the terminal.
 
-```bash
-bun run preview
-```
+Do not double-click `index.html` to open the site. This project needs the server
+started by `bun run dev`.
 
-### Lint
+### Step 7: Check That It Works
 
-```bash
-bun run lint
-```
+You should see Vishal and Krishi's wedding invitation. Scroll down and check
+that the story, events, and venue appear.
 
----
+Try the bride and Gujarati links in the next section. If you did not configure
+Supabase, the standard invitation should still work; the admin page will not
+be ready yet.
 
-## 🔗 Invitation Versions
+**To stop the website:** click inside the terminal and press **Ctrl+C**.
+Use the Control key, including on a Mac.
 
-Both sides use the same page and design system, switched via a URL query parameter:
+## Start It Again Later
 
-| URL                        | Description                                       |
-| -------------------------- | ------------------------------------------------- |
-| `/?side=groom`             | **Vishal Weds Krishi** — groom's side (V &amp; K) |
-| `/?side=bride`             | **Krishi Weds Vishal** — bride's side (K &amp; V) |
-| `/` (missing/invalid side) | Defaults to the groom's version                   |
+1. Open the same project folder in your editor.
+2. Choose **Terminal > New Terminal**.
+3. Run `bun run dev`.
+4. Open the Local address printed in the terminal.
 
-- Navigation within the page preserves the selected `side`.
-- Share buttons and calendar downloads include the selected side in the URL / event metadata.
+You do not need to reinstall Node.js or Bun every time. You do not need to run
+`bun install` again unless dependencies changed or `node_modules` is missing.
 
-### Invitation Language
+## Choose an Invitation Version
 
-Add `lang=gu` to display the guest-facing invitation in Gujarati:
+These examples assume the server uses port `5173`. If your terminal shows a
+different port, replace `5173` with that number.
 
-| URL | Language |
-| --- | --- |
-| `/?lang=gu` | Gujarati, groom's side |
-| `/?side=bride&lang=gu` | Gujarati, bride's side |
-| `/?side=groom&invite=<token>&lang=gu` | Personalised invitation in Gujarati |
-| `/?lang=en` or no language parameter | English |
+| Browser address                             | What you will see                              |
+| ------------------------------------------- | ---------------------------------------------- |
+| `http://localhost:5173/`                    | English invitation, groom's side               |
+| `http://localhost:5173/?side=groom`         | Vishal Weds Krishi, groom's side               |
+| `http://localhost:5173/?side=bride`         | Krishi Weds Vishal, bride's side               |
+| `http://localhost:5173/?lang=gu`            | Gujarati invitation, groom's side              |
+| `http://localhost:5173/?side=bride&lang=gu` | Gujarati invitation, bride's side              |
+| `http://localhost:5173/admin`               | Admin page, requiring the optional setup below |
 
-`language=gu`, `lang=gu-IN`, and `lang=gujarati` are also accepted.
-Unsupported values fall back to English. The URL determines the language;
-browser preferences and previous visits do not override it. Shared invitation
-links retain the selected language, and calendar downloads use translated text
-without changing event times.
+The text after `?` selects the version without changing any files. Missing or
+invalid side values use the groom version. Missing or unsupported language
+values use English. The URL determines the language, not the browser's language.
 
-Gujarati copy is maintained in `src/translations-gu.js`. The admin screen
-remains in English, and song lyrics remain in their original Hindi. Guest names
-and custom messages are displayed exactly as entered in the admin screen;
-enter them in Gujarati when creating a Gujarati personal greeting.
+After publishing, replace `http://localhost:5173` with your public website address.
 
----
+## Personalised Guest Invitations (Optional)
 
-## 💌 Personalised Invitations
+**Skip this section if you only want the standard invitation.**
 
-Guest invitations are private records in Supabase, not URL parameters. A guest
-link carries an unguessable 64-character bearer token, and the page asks the
-database for the single invitation matching that token. Editing the link cannot
-change a guest's name or message, and no endpoint ever returns the guest list.
+Supabase is an online service that stores guest names and messages and handles
+admin sign-in. This setup connects the website to your own Supabase project.
+You do not need to install a database on your computer.
 
-| URL                                 | Result                                      |
-| ----------------------------------- | ------------------------------------------- |
-| `/`                                 | Standard groom invitation                   |
-| `/?side=bride`                      | Standard bride invitation                   |
-| `/?side=groom&invite=<token>`       | Personalised groom invitation               |
-| `/?side=bride&invite=<token>`       | Personalised bride invitation               |
-| `/?side=groom&invite=made-up-token` | Standard groom invitation (token discarded) |
+### Step 1: Create a Supabase Project
 
-Each token is locked to the side it was created for, so changing `side` in the
-address bar drops the personalisation instead of retargeting it. A paused,
-deleted, or unrecognised invitation also falls back to the standard invitation.
+1. Visit [supabase.com](https://supabase.com/) and sign in or create an account.
+2. Create a new project in your organisation.
+3. Choose a project name, database password, and region.
+4. Store the database password safely and wait for the project to finish setting up.
 
-### Managing invitations
+The database password is not your website admin password. You will create the
+website admin account separately.
 
-1. Open `/admin` and sign in with an allowlisted account.
-2. Create an invitation with a guest name, a version (groom/bride), and an
-   optional personal message.
-3. Copy the guest link from the row and send it.
+### Step 2: Create the Database Tables and Access Rules
 
-Guests read the current wording on every page load, so editing a name or message
-in `/admin` appears on the guest's next refresh. Pausing or deleting an
-invitation immediately reverts that link to the standard invitation. The admin
-page is not linked from the invitation and asks search engines not to index it.
+This step uses SQL, a language for giving instructions to a database. You can
+use the supplied file without writing the database setup yourself.
 
-### Administrator access
+1. In your editor, open `supabase/migrations/personalized_invitations.sql`.
+2. Copy the entire contents of that file.
+3. In your Supabase project dashboard, open **SQL Editor** and create a new query.
+4. Paste the contents and select **Run**.
+5. Confirm that the query completes without an error.
 
-Admin access is an allowlist, never a public sign-up. Create the account in
-Supabase Auth, then add the same email in the SQL editor:
+Run this in your intended Supabase project, not an unrelated database. Keep
+the supplied access rules: they prevent visitors from browsing the guest list.
+
+### Step 3: Create Your Admin Account
+
+1. In Supabase, open **Authentication > Users**.
+2. Use **Add user > Create new user** (the wording may vary).
+3. Enter your email address in lowercase and choose a strong password.
+4. Mark the email as confirmed, using the auto-confirm option if available.
+5. Save the account and store its password safely.
+
+Next, allow that account to manage invitations. Open a new query in **SQL Editor**
+and run the following, replacing `you@example.com` with the same lowercase email:
 
 ```sql
 insert into private.invitation_admins (email)
@@ -178,269 +254,323 @@ values ('you@example.com')
 on conflict (email) do nothing;
 ```
 
-The list is checked against the verified `email` claim on the signed-in
-account's JWT. Deleting a row revokes that account on its next request.
+Do not remove the single quotes around the email.
 
-### Changing the password
+The file `supabase/migrations/invitation_admins.sql` contains the original
+owner's email. Do not run it unchanged when setting up your own admin account;
+use the example above instead.
 
-Sign in at `/admin` and use **Change password** in the header. The current
-password is re-checked before the new one is stored, so an unattended browser
-cannot be used to rotate the credential.
+### Step 4: Connect the Website to Supabase
 
-This project has no email-based reset, so keep the password somewhere safe. If
-it is ever lost, set a new one from the Supabase dashboard under
-**Authentication → Users**.
+1. Find your **Project URL** in Supabase's **Connect** panel or project settings.
+2. Find your **publishable key** or legacy **anon/public key** in the API keys settings.
+3. In your editor's file list, create a file named `.env.local` next to `package.json`.
+4. If `.env.local` already exists, update it instead of creating a second file.
+5. Paste the following and replace both example values with your project's values:
 
-### Schema
-
-| Object                                   | Purpose                                                                   |
-| ---------------------------------------- | ------------------------------------------------------------------------- |
-| `public.invitations`                     | Guest records: name, message, locked side, active flag, bearer token      |
-| `public.resolve_invitation(token, side)` | Returns at most one active invitation for the matching token **and** side |
-| `public.is_invitation_admin()`           | True when the signed-in account is on the allowlist                       |
-| `private.invitation_admins`              | The admin allowlist, never exposed to the browser                         |
-
-Anonymous visitors receive no `select`, `insert`, `update`, or `delete` grant on
-`public.invitations`. Their only access path is the resolver, which requires both
-a valid token and the matching side, and returns a single row.
-
-Apply the schema in [supabase/migrations/](file:///Users/vishaltailor/Desktop/Projects/wedding-web/supabase/migrations)
-against the project database, then add your admin email with
-[invitation_admins.sql](file:///Users/vishaltailor/Desktop/Projects/wedding-web/supabase/migrations/invitation_admins.sql).
-
----
-
-## 📝 Customisation Guide
-
-All wedding content lives in a single central file. Edit, extend, or override as needed.
-
-### Wedding Data — [src/wedding.js](file:///Users/vishaltailor/Desktop/Projects/wedding-web/src/wedding.js)
-
-Two objects are exported:
-
-```
-sharedWedding   → Fields common to both sides (date, venue, maps URL, …)
-weddingSides    → { groom, bride } — each side overrides/extends shared fields
+```dotenv
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-public-anon-or-publishable-key
 ```
 
-#### Overridable Fields
+The name must be exactly `.env.local`, including the initial dot, not
+`.env.local.txt`. Use one setting per line. These are connection settings,
+not commands to run in the terminal.
 
-| Field        | Type       | Example                                             |
-| ------------ | ---------- | --------------------------------------------------- |
-| `date`       | ISO string | `"2026-12-12T16:00:00+05:30"` (main ceremony start) |
-| `endDate`    | ISO string | `"2026-12-12T23:00:00+05:30"` (calendar event end)  |
-| `dateLabel`  | string     | `"12 December 2026"`                                |
-| `venue`      | string     | `"SMC Community Hall"`                              |
-| `location`   | string     | `"Jahangirpura, Surat, Gujarat"`                    |
-| `area`       | string     | `"Jahangirpura"`                                    |
-| `city`       | string     | `"Surat"`                                           |
-| `region`     | string     | `"Gujarat"`                                         |
-| `mapsUrl`    | string     | Full Google Maps search / place URL                 |
-| `firstName`  | string     | Groom-side "Vishal" or bride-side "Krishi"          |
-| `secondName` | string     | Other partner's name                                |
-| `events[]`   | array      | Ceremony cards — see schema below                   |
+**Never use a `service_role` key or a secret key here.** The website's public
+key is meant for browser use; the database access rules restrict what it can do.
+Do not put your database password or admin password in this file.
 
-#### Event Object Schema
+`.env.example` shows the available setting names. Do not copy its placeholder
+values unchanged: they are not a working Supabase connection. For local use,
+leave `SITE_URL` out; it is used when publishing.
+
+Save the file. Stop the server with **Ctrl+C** and run `bun run dev` again.
+Connection settings are read when the server starts.
+
+### Step 5: Create and Test a Guest Invitation
+
+1. Open `http://localhost:5173/admin`, using your actual port if different.
+2. Sign in with the email and password from Step 3.
+3. Create an invitation with a guest name, the groom or bride version, and an optional message.
+4. Copy the generated guest link.
+5. Open it in a private/incognito browser window and check the greeting.
+
+A personal link looks like `/?side=groom&invite=...`. The long `invite` value
+is generated automatically; do not invent one or replace it with a guest name.
+
+For a Gujarati personal invitation, append `&lang=gu` to the generated link.
+Guest names and messages appear exactly as entered, so enter them in Gujarati
+if you want a Gujarati greeting. The admin page stays in English and song lyrics
+stay in their original Hindi.
+
+**Local guest links are for testing only.** After publishing, open the admin
+page on the public website and copy links there so guests receive public URLs.
+
+### Manage Invitations and Passwords
+
+- Edit a guest's name or message in `/admin`; they see the change on their next page refresh.
+- Pause or delete an invitation to make its link return to the standard invitation.
+- Changing the side in a personal link also removes the personal greeting.
+- Use **Change password** in the admin header; it asks for the current password.
+- If you lose the password, set a new one through **Supabase > Authentication > Users**. This project has no email-based password reset screen.
+
+Treat personal links as private. Anyone with a link can view that guest's name
+and message, including a messaging service that fetches the link preview.
+Revoking a link cannot remove previews or copies already saved by another service.
+
+## Change the Wedding Details
+
+You can run the site without making changes. If you do edit it, keep a backup
+of the original file and make one small change at a time.
+
+Open a file in your editor, change the relevant text, and save with **Ctrl+S**
+on Windows/Linux or **Command+S** on Mac. While `bun run dev` is running, the
+browser usually updates automatically.
+
+| What to change                                                          | File or folder           |
+| ----------------------------------------------------------------------- | ------------------------ |
+| Names, wedding dates, venue, map link, home addresses, ceremony details | `src/wedding.js`         |
+| Gujarati translations                                                   | `src/translations-gu.js` |
+| Our Story and other page wording                                        | `src/routes/index.jsx`   |
+| Colours, fonts, spacing, and layout                                     | `src/index.css`          |
+| Hero, story, and venue artwork                                          | `src/assets/images/`     |
+| Music and lyric files                                                   | `src/assets/song/`       |
+
+In `src/wedding.js`, `sharedWedding` holds common details and `weddingSides`
+holds the groom and bride details. Update both sides where needed.
+
+For example, to change the venue, replace only the text inside the quotes:
 
 ```js
-{
-  name:        "Haldi",
-  subtitle:    "A little sunshine, a lot of love",
-  date:        "10 December",
-  time:        "4:00 PM",
-  icon:        "sun" | "music" | "flower" | "carriage",
-  description: "Short paragraph describing the ceremony.",
-  dress:       "Dress code suggestion",
-  tone:        "yellow" | "green" | "rose" | "purple" | …,
-}
+venue: "SMC Community Hall",
 ```
 
-The groom's side currently includes **4 events** (Haldi → Sangeet → Baraat → Wedding), while the bride's side has **3 events** (Haldi → Sangeet → Wedding). The event grid auto-switches layout from 3-column to 2-column when the count is 4.
+Keep the quotes, commas, and brackets in place. Avoid adding an unescaped double
+quote inside double-quoted text, as that can break the file.
 
-### Our Story Copy — [content.md](file:///Users/vishaltailor/Desktop/Projects/wedding-web/content.md)
+**Dates need extra care.** The `date` and `endDate` values control the countdown
+and calendar entry. A value such as `2026-12-12T16:00:00+05:30` means
+12 December 2026 at 4:00 PM in India's time zone. `dateLabel` and each ceremony's
+`date` and `time` are separate display text; changing one does not automatically
+update the others. Check that they all match your intended schedule.
 
-The "Our Story" narrative is stored separately. The prose is currently inlined directly in [src/routes/index.jsx](file:///Users/vishaltailor/Desktop/Projects/wedding-web/src/routes/index.jsx#L474-L513) — update that section, or wire up a Markdown loader if you prefer to keep it in `content.md`.
+`content.md` is a story draft, not the text source loaded by the website.
+Editing that file alone will not change the displayed story. New English wording
+also needs corresponding Gujarati translations.
 
-### Hero &amp; Venue Illustrations
+Artwork and music changes may require updating imports in the page or component
+files. Ask someone familiar with the code to help with those changes. After
+editing, check both sides, both languages, and light and dark themes.
 
-Swap the images in [src/assets/images/](file:///Users/vishaltailor/Desktop/Projects/wedding-web/src/assets/images/):
+## Publish the Website
 
-| File                             | Usage                       |
-| -------------------------------- | --------------------------- |
-| `wedding-morning-view.jpg/.png`  | Light-mode hero artwork     |
-| `wedding-night-view.jpg/.png`    | Dark-mode hero artwork      |
-| `wedding-morning-phera-view.jpg` | Light-mode Our Story mandap |
-| `wedding-night-phera-view.jpg`   | Dark-mode Our Story mandap  |
-| `morning-hall-map-card.jpg`      | Light-mode venue card       |
-| `night-hall-map-card.jpg`        | Dark-mode venue card        |
-| `ganesha.svg`                    | Header Ganesha blessing SVG |
+Running `bun run dev` does not make the website public. For guests to open it,
+you need a hosting service. This project includes configuration for **Vercel**,
+including personalised link previews.
 
-### Theme &amp; Palette
+Hosting providers can change their pricing and limits. Review the selected plan
+before publishing; a custom domain may cost extra.
 
-All colours are defined as CSS custom properties at the top of [src/index.css](file:///Users/vishaltailor/Desktop/Projects/wedding-web/src/index.css#L4-L19). Dark-mode overrides live in the `prefers-color-scheme: dark` media query [here](file:///Users/vishaltailor/Desktop/Projects/wedding-web/src/index.css#L891-L942).
+### Step 1: Check the Publishing Build Locally
 
-Fonts are loaded from Google Fonts:
-
-- **Cormorant Garamond** — headings, serif body accents, monograms
-- **DM Sans** — UI body text, navigation, labels
-- **Italianno** — the "weds" flourish in the hero, couple signature
-
----
-
-## 🏗 Project Structure
-
-```
-wedding-web/
-├── public/
-│   ├── favicon.svg
-│   └── vite.svg
-├── src/
-│   ├── assets/images/        # Hero, venue, and mandap illustrations (JPG/PNG/SVG)
-│   ├── routes/
-│   │   ├── __root.jsx        # Root layout (Outlet)
-│   │   ├── admin.jsx         # Invitation admin (sign in → create → edit → share links)
-│   │   └── index.jsx         # Main invitation page (hero → story → events → venue → CTA)
-│   ├── index.css             # Tailwind import, design tokens, all component styles, media queries
-│   ├── main.jsx              # React root + TanStack Router bootstrap
-│   ├── routeTree.gen.ts      # Auto-generated route tree (do not edit by hand)
-│   ├── supabase.js           # Supabase client, invitation resolver, admin data access
-│   └── wedding.js            # Single source of truth: wedding dates, venues, events per side
-├── .gitignore
-├── .prettierrc               # Prettier config (sort-imports + tailwind plugins)
-├── bun.lockb
-├── content.md                # Our-story prose draft
-├── eslint.config.js          # ESLint flat config (JS + React hooks + refresh)
-├── index.html                # HTML shell with SEO meta + theme colors
-├── package.json
-└── vite.config.js            # Vite + SWC + Tailwind v4 + TanStack Router plugins
-```
-
-### Key Patterns
-
-- **File-based routing** — TanStack Router's Vite plugin auto-generates `routeTree.gen.ts` from the `routes/` directory and enables per-route code-splitting. See [vite.config.js](file:///Users/vishaltailor/Desktop/Projects/wedding-web/vite.config.js#L8).
-- **Search param validation** — The index route normalises the `side` query param (groom/bride) via `validateSearch` in [src/routes/index.jsx](file:///Users/vishaltailor/Desktop/Projects/wedding-web/src/routes/index.jsx#L27-L30).
-- **Centralised config** — `getWedding(side)` in [src/wedding.js](file:///Users/vishaltailor/Desktop/Projects/wedding-web/src/wedding.js#L112-L125) composes derived fields (`couple`, `title`, `slug`, `firstInitial`, …) so every component reads from a single, consistent shape.
-- **Motion helpers** — A shared `reveal` preset configures all scroll-reveal animation behaviour once and is reused across sections.
-
----
-
-## ☁ Deployment
-
-Since `bun run build` produces a static `dist/` directory, deployment is straightforward on any static host:
-
-**Vercel** (recommended):
+Stop the development server with **Ctrl+C**, then run:
 
 ```bash
-# From the project root
-vercel
-# Build command:   bun run build
-# Output directory: dist
+bun run build
 ```
 
-**Netlify / Cloudflare Pages / GitHub Pages / S3 + CloudFront / etc.** use the same build command and output directory for the invitation itself. Personalised social previews require the Vercel functions below or an equivalent server implementation.
+This creates a `dist` folder containing the publishing-ready website. Wait for
+the build to finish without errors, then run:
 
-### Side-Specific Social Previews
+```bash
+bun run preview
+```
 
-The Vite social preview plugin builds two 1200 x 630 JPEG cards and two HTML
-variants from `src/wedding.js`. `vercel.json` rewrites `/?side=bride` to the bride
-HTML without changing the visible URL. Groom, missing, and invalid side values
-use the default HTML. Both responses include Open Graph and Twitter metadata
-before JavaScript runs, so link previews do not depend on React execution.
+Open the address shown in the terminal, usually `http://localhost:4173/`.
+Check the invitation again. This is still a local preview, not a public website.
+Press **Ctrl+C** when finished.
 
-Vercel uses ordered `routes` here so the side condition is evaluated before
-the filesystem serves the root `index.html`. Keep these root routes before
-the filesystem handler; ordinary `rewrites` can be bypassed by the existing
-static root page. Assets continue to use normal static-file serving.
+### Step 2: Put the Project in a GitHub Repository
 
-Image filenames include a content hash so changes to the wedding details produce
-new image URLs. Social platforms may still cache the shared page itself; request
-a fresh scrape after deploying updated metadata.
+Vercel can publish from GitHub and update the site when you upload changes.
 
-`bun run dev` and `bun run preview` also serve the appropriate metadata for each
-side. Other static hosts need an equivalent query-aware rewrite to serve the
-bride preview.
+If the project is already in a GitHub repository you can access, use that
+repository. Otherwise, create a repository on [github.com](https://github.com/)
+and use [GitHub Desktop](https://desktop.github.com/) to add the existing project
+folder and publish it. A private repository is a good choice for a family project.
 
-### Personalised Social Previews
+Before publishing the repository, inspect the files being uploaded. The included
+`.gitignore` excludes `.env.local`, `.env`, `node_modules`, and `dist`.
+Do not upload passwords, secret keys, or private guest exports. Keep `bun.lockb`,
+the source files, `api`, `scripts/fonts`, and `vercel.json` in the repository.
 
-Links containing `invite` are routed to `api/invitation.mjs` before the static
-side routes. The function resolves the active invitation using the existing
-anonymous, token-and-side-scoped Supabase RPC, then returns the built React HTML
-with personalised Open Graph and Twitter tags before JavaScript runs. The title
-contains the guest name; the description contains their message, the selected
-side's event names, dates and times, and the wedding venue.
+### Step 3: Import the Repository into Vercel
 
-`api/invitation-image.mjs` generates a 1200 x 630 JPEG with the guest name,
-message, couple, venue and complete side-specific schedule. Image URLs contain a
-content version so guest or event edits produce a new URL. The image schedule is
-in English; metadata respects `lang=gu` and `language=gu`.
+1. Visit [vercel.com](https://vercel.com/) and sign in.
+2. Choose **Add New > Project** and connect your GitHub account if requested.
+3. Import the repository containing this project.
+4. Use these settings, checking any automatically detected values:
 
-Preview rendering uses the licensed Noto fonts bundled in `scripts/fonts`,
-including Gujarati and Devanagari guest text. `scripts/social-fonts.mjs`
-uses Fontkit to shape script runs and converts every letter to an SVG path
-before Sharp renders the image. Vercel does not need system fonts or Fontconfig.
-Keep the font files and their licenses included in both functions
-in `vercel.json`. Font changes also update personal image URLs. Redeploy after
-changing fonts; messaging platforms may retain older cached page previews.
+| Setting          | Value                                                                                          |
+| ---------------- | ---------------------------------------------------------------------------------------------- |
+| Framework preset | Vite                                                                                           |
+| Root directory   | The folder containing `package.json`; leave the default if it is at the repository's top level |
+| Install command  | `bun install`                                                                                  |
+| Build command    | `bun run build`                                                                                |
+| Output directory | `dist`                                                                                         |
+| Node.js version  | A currently supported LTS release                                                              |
 
-Invalid, inactive, deleted or wrong-side invitations, and resolver outages, fall
-back to the standard side preview. Both endpoints use `private, no-store` and
-`noindex` headers. Anyone possessing the personal link can see its guest details,
-including the social platform that fetches the preview. Platforms can cache
-previously fetched previews independently; revoking a link cannot remove copies
-already cached by a messaging service.
+### Step 4: Add the Online Connection Settings
 
-The functions use the same `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
-environment variables as the app (or server-only `SUPABASE_URL` and
-`SUPABASE_ANON_KEY`). No service-role key is needed. `vercel.json` includes the
-built HTML in the page function. Redeploy to enable the new personal-link route.
-Both `bun run dev` and `bun run preview` run the same preview handlers locally.
+In the project's **Environment Variables**, add:
 
-### Environment Variables
+| Name                     | Value                                                                                                       |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `SITE_URL`               | Your public website address, such as `https://your-project.vercel.app`, with no invitation query parameters |
+| `VITE_SUPABASE_URL`      | Your Supabase Project URL, only if using personalised invitations                                           |
+| `VITE_SUPABASE_ANON_KEY` | Your public anon or publishable key, only if using personalised invitations                                 |
 
-Set **`SITE_URL`** in Vercel to the public wedding URL (for example,
-`https://your-wedding-domain.com`) and redeploy. This ensures absolute image and
-page URLs point to your custom domain. When unset, the build uses
-`VERCEL_PROJECT_PRODUCTION_URL`, then `VERCEL_URL`; local builds use
-`http://localhost:5173`.
+Your local `.env.local` is not uploaded, so these values must also be added
+in Vercel. Apply them to **Production** and also **Preview** if you want guest
+features in preview deployments.
 
-Personalised invitations also need the Supabase connection, so set
-**`VITE_SUPABASE_URL`** and **`VITE_SUPABASE_ANON_KEY`** for every environment
-that builds the site. Both values are public by design: the anon key is
-restricted by row level security, and guest details are only reachable through
-the token-scoped resolver. Never set the service role key as a `VITE_` variable,
-because Vite inlines those into the browser bundle.
+If you do not know the public address yet, Vercel normally supplies a default
+address during deployment. After the first deployment, copy that address into
+`SITE_URL` and redeploy. Without an explicit `SITE_URL`, the project uses
+Vercel's supplied production/deployment hostname when available.
 
-Local development reads the same names from `.env.local`; see
-[.env.example](file:///Users/vishaltailor/Desktop/Projects/wedding-web/.env.example).
+### Step 5: Deploy and Test the Public Link
 
----
+1. Select **Deploy** and wait for the build to finish.
+2. Open the public address Vercel provides.
+3. Check `/?side=groom`, `/?side=bride`, and `/?side=bride&lang=gu`.
+4. If using personal invitations, open `/admin` on this public address and test a guest link.
+5. Open the public link on your phone with Wi-Fi turned off to confirm it works outside your computer.
 
-## 🤝 Scripts Reference
+Send this public address to guests, not a `localhost` address.
 
-From [package.json](file:///Users/vishaltailor/Desktop/Projects/wedding-web/package.json#L6-L11):
+For a custom domain, add it in Vercel's **Settings > Domains** and follow the
+instructions for your domain provider. Update `SITE_URL` to the new HTTPS
+address and redeploy before copying and sharing new guest links.
 
-| Command           | What it does                                              |
-| ----------------- | --------------------------------------------------------- |
-| `bun run dev`     | Start Vite dev server with HMR                            |
-| `bun run build`   | Type-check (if TS), bundle, and emit static `dist/`       |
-| `bun run lint`    | Run ESLint across all `*.js / *.jsx` files (ignores dist) |
-| `bun run preview` | Locally serve the production build                        |
+**After later changes:** save and upload your changes to the connected GitHub
+repository. Vercel builds a new deployment. Changes to Vercel environment
+variables also need a redeployment to take effect.
 
----
+### Link Previews and Other Hosting Services
 
-## ♿ Accessibility Highlights
+Vercel serves different preview titles and images for the groom and bride
+versions. Personal links can also show the guest's name and message in the
+preview that messaging apps display.
 
-- Skip-link anchor at the top of the DOM for keyboard/screen-reader users.
-- Explicit `aria-label`s on the navigation, countdown, blessing, and share status regions.
-- Focus outlines use a gold-contrast ring with 6 px offset so interactive elements never appear "broken" on focus.
-- Mobile navigation supports the **Escape** key for closing, with `aria-expanded` / `aria-controls` attributes wired up.
-- Decorative SVG and images are marked `aria-hidden="true"` (or empty `alt`), while meaningful venue / mandap illustrations carry descriptive alt text.
-- Full `prefers-reduced-motion` media query disables smooth scrolling and animation transitions.
+Messaging platforms may cache old previews. A successful deployment does not
+guarantee they immediately show a new image or wording.
 
----
+Other services can host the standard `dist` website, but they need equivalent
+routing for `/admin` and side-specific previews. Personalised social previews
+also need server functions equivalent to those in `api/`. Uploading `dist`
+alone does not provide those functions. Vercel is the simplest supported path here.
 
-## 📜 License
+## Troubleshooting
 
-Made with love, for a lifetime of it. ♥
+| Problem                                              | What to try                                                                                                                                                                   |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node` or `bun` is "not found" or "not recognized"   | Close and reopen the editor and terminal after installation. If it still fails, revisit the official installer's PATH instructions; PATH is how your computer finds commands. |
+| Cannot find `package.json`                           | Open the actual project folder, not its parent or a ZIP file, then create a new editor terminal.                                                                              |
+| Dependency installation fails                        | Check your connection and the first error shown. Confirm you installed current Node.js LTS and Bun, then retry `bun install`.                                                 |
+| Browser says the site cannot be reached              | Keep `bun run dev` running and use the exact Local address printed in the terminal.                                                                                           |
+| Port `5173` is already in use                        | Use the alternative port printed by Vite. Stop an old project server with Ctrl+C if you no longer need it.                                                                    |
+| Blank page or error after editing                    | Undo your most recent edit, save, and check the terminal for the error. Missing quotes, commas, or brackets are common causes.                                                |
+| Admin says Supabase is not configured                | Check `.env.local` is next to `package.json`, has both correctly spelled settings, and is not a `.txt` file. Restart the server.                                              |
+| Admin sign-in fails                                  | Use the Supabase Auth user's password, not the database password. Check the email is confirmed.                                                                               |
+| Sign-in succeeds but access is denied                | Add the exact lowercase Auth email to `private.invitation_admins` in the same Supabase project.                                                                               |
+| Invitations cannot be created or loaded              | Check the migration ran successfully and the URL and public key belong to that same project. Do not disable database security rules.                                          |
+| A personal link shows the standard invitation        | Check that it was copied fully, is active, and uses the original groom/bride side. Invalid links or connection failures fall back to the standard page.                       |
+| Changes to `.env.local` do not appear                | Save, stop the server with Ctrl+C, and start it again. Check whether an existing `.env` or terminal environment also defines those settings.                                  |
+| Online personal invitations fail but local ones work | Add the Supabase settings to the correct Vercel environment and redeploy.                                                                                                     |
+| Preview build does not open                          | Run `bun run build` successfully before `bun run preview`.                                                                                                                    |
+| Music does not start automatically                   | Browsers often require a click or tap first. Use the site's play button.                                                                                                      |
+| A guest cannot open a link you sent                  | Make sure it starts with your public HTTPS address, not `localhost`.                                                                                                          |
+| Shared previews have an old image or wrong domain    | Check `SITE_URL`, redeploy, and allow for the messaging platform's cached preview.                                                                                            |
 
-Personal / family use for Vishal &amp; Krishi's wedding invitation. Please reach out to the couple's families for permission before reusing or redistributing the custom artwork or prose.
+If you need help, share the command you ran and the first error message.
+Do not share passwords, secret keys, `.env.local`, or a real guest's personal link.
+
+## Technical Reference
+
+This section is optional; it is not needed to follow the setup guide.
+
+### Commands
+
+Run these in the folder containing `package.json`.
+
+| Command                          | Purpose                                                          |
+| -------------------------------- | ---------------------------------------------------------------- |
+| `bun install`                    | Install project dependencies                                     |
+| `bun run dev`                    | Start the local development server with automatic updates        |
+| `bun run build`                  | Build the website and social-preview assets into `dist`          |
+| `bun run preview`                | Serve an existing build locally                                  |
+| `bun run lint`                   | Check JavaScript/React code with ESLint; this does not run tests |
+| `node --test scripts/*.test.mjs` | Run the included automated tests in a Mac/Linux shell            |
+
+On Windows PowerShell, run the test files explicitly:
+
+```powershell
+node --test scripts/i18n.test.mjs scripts/invitation-card.test.mjs scripts/personal-preview.test.mjs scripts/social-fonts.test.mjs scripts/social-preview.test.mjs
+```
+
+The build command uses Node.js and Vite; it does not perform a separate
+TypeScript check. Avoid switching package managers casually, since the
+repository's committed lockfile is `bun.lockb`.
+
+### Files and Technologies
+
+| File or folder                               | Purpose                                                  |
+| -------------------------------------------- | -------------------------------------------------------- |
+| `src/routes/index.jsx`                       | Main invitation page                                     |
+| `src/routes/admin.jsx`                       | Admin sign-in and invitation management                  |
+| `src/wedding.js`                             | Wedding data for both sides                              |
+| `src/i18n.js`, `src/translations-gu.js`      | Language selection and Gujarati copy                     |
+| `src/index.css`, `src/theme.js`              | Styling and theme preferences                            |
+| `src/supabase.js`                            | Browser database connection and invitation access        |
+| `src/routeTree.gen.ts`                       | Generated routing file; do not edit manually             |
+| `supabase/migrations/`                       | Database tables, functions, and admin access setup       |
+| `scripts/social-preview.mjs`                 | Side-specific preview HTML and images                    |
+| `scripts/personal-preview.mjs`               | Personalised preview handlers                            |
+| `scripts/social-fonts.mjs`, `scripts/fonts/` | Script-aware text rendering and licensed preview fonts   |
+| `api/`                                       | Vercel personalised preview endpoints                    |
+| `vercel.json`                                | Hosting routes, build settings, and function assets      |
+| `.env.example`                               | Example connection-setting names                         |
+| `package.json`, `bun.lockb`                  | Commands, dependencies, and locked versions              |
+| `dist/`, `node_modules/`                     | Generated output and installed dependencies; do not edit |
+
+The site uses React 19, Vite 6, TanStack Router, Tailwind CSS 4, Motion, Lucide
+icons, and Supabase. Preview generation uses Sharp and Fontkit.
+
+### Privacy and Social-Preview Notes
+
+- Anonymous visitors cannot list or directly modify `public.invitations`. They resolve one active record through `public.resolve_invitation(token, side)`.
+- Personal tokens contain 64 hexadecimal characters and are locked to one side. Invalid, paused, deleted, or wrong-side links return the standard invitation.
+- Admin access is checked by `public.is_invitation_admin()` against the verified account email in `private.invitation_admins`.
+- Removing an email from the allowlist revokes its admin access on the next request.
+- `api/invitation.mjs` provides personalised HTML metadata; `api/invitation-image.mjs` provides a 1200 x 630 JPEG.
+- Personal preview endpoints use `private, no-store` and `noindex` headers, but external platforms can still keep their own cached copies.
+- Personal preview image schedules are in English; metadata supports Gujarati. Bundled Noto fonts support Gujarati and Devanagari guest text.
+- Keep the font files, their licences, and the function `includeFiles` settings in `vercel.json`. Server rendering does not require system fonts or Fontconfig.
+- Keep Vercel's personal-link and side-specific routes before its filesystem handler so the root `index.html` does not bypass them.
+- Server preview handlers can alternatively use `SUPABASE_URL` and `SUPABASE_ANON_KEY`; the browser still needs the `VITE_` settings. No service-role key is required.
+
+### Accessibility and Motion
+
+The site includes keyboard focus styles, a skip link, accessible labels, and
+reduced-motion support. Animation is disabled or reduced when the device asks
+for reduced motion. Test changes on mobile as well as desktop, including both
+themes and languages.
+
+## Usage and Artwork
+
+This project is for Vishal and Krishi's wedding and personal/family use.
+Contact the couple's families for permission before reusing or redistributing
+the custom artwork or prose. Bundled fonts have their own licence files in
+`scripts/fonts/`; keep those with the fonts.
